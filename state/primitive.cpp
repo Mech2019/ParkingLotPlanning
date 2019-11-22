@@ -4,15 +4,17 @@
 
 using namespace std;
 
+// compute next car state given current car state, speed (constant global)
+// and steering angle after a time duration dt
 CarState CarState::nextCarState(CarState car, double dt) const {
 	return car;
 }
 
-//input: 
+// input: 
 //	empty 2D vector of CarState to store sampled locations
-//  Each row in this vector represents the trajectoy of 1 primitive
-//  with the last element to be the final location after performing that primitive
-//Output: filled 2D vector
+//	Each row in this vector represents the trajectoy of 1 primitive
+//	with the last element to be the final location after performing that primitive
+// Output: filled 2D vector
 void CarState::compute_primitive(vector<vector<CarState>> &result) const {
 	double DURATION = 0.5; // time to drive
 	int SAMPLE_POINTS = 10; // sampled points per each primitive
@@ -37,11 +39,12 @@ void CarState::compute_primitive(vector<vector<CarState>> &result) const {
 	}
 }
 
+// Test
 int main() {
 	CarState car;
 	int temp;
-	car.set_delta(123.456);
-	cout << car.get_x() << " , " << car.get_delta() << endl;
+	car.set_delta(3.1415926);
+	cout << car << endl;
 
 	vector<vector<CarState>> result;
 	car.compute_primitive(result);
