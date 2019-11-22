@@ -41,7 +41,7 @@ public:
 	double get_delta();
 	void set_delta(double delta_);
 
-	void compute_primitive(vector<vector<CarState>> &result) const;
+	void compute_primitive(vector<vector<CarState> > &result) const;
 };
 
 

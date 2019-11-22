@@ -10,7 +10,8 @@ double h = 4;
 double w = 2;
 
 bool intersect_point(State &s1, double x, double y) {
-	return (x > s1.get_x() - h && x < s1.get_x() + h && y < s1.get_y() + w && y > s1.get_y() + w);
+	return (x >= s1.get_x() - h && x <= s1.get_x() + h && y <= s1.get_y() + w &&
+	y >= s1.get_y() - w);
 }
 
 bool onSegment(double x1, double y1, double x2, double y2, double x3, double y3) 
@@ -75,7 +76,8 @@ bool collision_check(State &s1, State &s2){
 		return true;
 		}
 	}
-
+//    cout << "point not in rectangle" <<endl;
+	
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			if (intersect_lines(v1[2 * i], v1[2 * i + 1], v1[2 * (i + 1)], v1[2 * (i + 1) + 1], 
@@ -88,12 +90,17 @@ bool collision_check(State &s1, State &s2){
 }
 
 int main(){
-  printf("Finished !\n");
+//  printf("Start check collision !\n");
 
   State state1 = State(0, 0, 0, 0);
-  State state2 = State(8, 0, 0, 0);
+  State state2 = State(10, 0, 0, 0);
   cout << collision_check(state1, state2) << endl;
-  printf("Finished !\n");
+
+  State state3 = State(0, 0, 0, 0);
+  State state4 = State(5, 3, 0.54, 0);
+  cout << collision_check(state3, state4) << endl;
+
+//  printf("Finished !\n");
 
   return 0;
 }
