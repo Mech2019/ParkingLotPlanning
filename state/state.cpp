@@ -51,6 +51,25 @@ void State::set_theta(double theta_) {
 
 
 
+// =========================================
 
+CarState::CarState() 
+	: State()
+{
+	delta = 0;
+}
 
+CarState::CarState(double x_, double y_, double theta_, bool flag_, double delta_)
+	: State(x_, y_, theta_, flag_)
+{
+	delta = delta_;
+}
+
+double CarState::get_delta() {
+	return delta;
+}
+
+void CarState::set_delta(double delta_) {
+	delta = delta_;
+}
 
