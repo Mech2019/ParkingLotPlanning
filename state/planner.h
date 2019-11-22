@@ -24,6 +24,17 @@ public:
   void set_theta(double theta_);
 };
 
+class CarState : public State {
+private:
+	double delta; // steering angle
+public:
+	CarState();
+	CarState(double x_, double y_, double theta_, bool flag_, double delta_);
+
+	double get_delta();
+	void set_delta(double delta_);
+};
+
 
 
 
