@@ -1,4 +1,5 @@
-#include "planner.h"
+#include "state.h"
+
 
 State::State() {
   x = 0;
@@ -48,6 +49,13 @@ void State::set_y(double y_) {
 void State::set_theta(double theta_) {
   theta = theta_;
 }
+
+void State::print_state() {
+  cout << get_x() << ", " << get_y() << ", " << get_theta() << ", " <<
+  get_flag() << endl;
+}
+
+
 
 
 

@@ -1,3 +1,7 @@
+#include <iostream>
+using namespace std;
+
+
 #define CAR_SPEED 5.0
 #define PI 3.1415927
 
@@ -22,6 +26,7 @@ public:
   void set_x(double x_);
   void set_y(double y_);
   void set_theta(double theta_);
+  void print_state();
 };
 
 
