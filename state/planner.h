@@ -1,3 +1,8 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
 #define CAR_SPEED 5.0
 #define PI 3.1415927
 
@@ -27,12 +32,16 @@ public:
 class CarState : public State {
 private:
 	double delta; // steering angle
+	CarState nextCarState(CarState car, double dt) const;
+
 public:
 	CarState();
 	CarState(double x_, double y_, double theta_, bool flag_, double delta_);
 
 	double get_delta();
 	void set_delta(double delta_);
+
+	void compute_primitive(vector<vector<CarState>> &result) const;
 };
 
 
