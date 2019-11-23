@@ -1,5 +1,7 @@
 #include "map.h"
 
+using namespace std;
+
 static_map::static_map(){}
 static_map::static_map(double wid, double len, vector<vector<double>> input){
 	this->map_width = wid;
@@ -27,7 +29,7 @@ vector<State*> static_map::get_slots(){
 	return this->slots;
 }
 
-void parse_static_map(char* filename, vector<vector<double>>& input){
+void parse_static_map(const char* filename, vector<vector<double>>& input){
 	FILE *fp;
 	fp = fopen(filename, "r");
 	double x,y,theta;
