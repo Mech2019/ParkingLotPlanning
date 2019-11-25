@@ -39,6 +39,8 @@ public:
 	void set_delta(double delta_);
 
 	void compute_primitive(std::vector<std::vector<CarState> > &result) const;
+
+	friend ostream& operator<<(ostream& os, CarState& car);
 };
 
 #endif

@@ -1,4 +1,7 @@
+#include <iostream>
 #include "state.h"
+
+using namespace std;
 
 State::State() {
 	x = 0;
@@ -22,7 +25,7 @@ void State::update_state(int x_, int y_, double theta_, bool flag_) {
 }
 
 double State::get_x() {
-	return x;	
+	return x;
 }
 
 double State::get_y() {
@@ -53,11 +56,11 @@ void State::set_theta(double theta_) {
 
 // =========================================
 
-CarState::CarState() : State(){
+CarState::CarState() : State() {
 	delta = 0;
 }
 
-CarState::CarState(double x_, double y_, 
+CarState::CarState(double x_, double y_,
 	double theta_, bool flag_, double delta_) : State(x_, y_, theta_, flag_) {
 	delta = delta_;
 }
@@ -70,3 +73,8 @@ void CarState::set_delta(double delta_) {
 	delta = delta_;
 }
 
+ostream& operator<<(ostream& os, CarState& car)
+{
+	os << car.get_x() << ", " << car.get_y() << ", " << car.get_theta() / PI * 180.0 << ", " << car.get_delta() / PI * 180.0;
+	return os;
+}
