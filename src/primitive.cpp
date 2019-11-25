@@ -12,9 +12,10 @@ CarState CarState::nextCarState(CarState car, double dt) const {
 
 // input: 
 //	empty 2D vector of CarState to store sampled locations
+// Output: 
+//	filled 2D vector
 //	Each row in this vector represents the trajectoy of 1 primitive
 //	with the last element to be the final location after performing that primitive
-// Output: filled 2D vector
 void CarState::compute_primitive(vector<vector<CarState>> &result) const {
 	double DURATION = 0.5; // time to drive
 	int SAMPLE_POINTS = 10; // sampled points per each primitive
@@ -34,7 +35,8 @@ void CarState::compute_primitive(vector<vector<CarState>> &result) const {
 
 		double dt = DURATION / SAMPLE_POINTS;
 		for (int i = 0; i < SAMPLE_POINTS; i++) {
-			result[result.size()-1].push_back(this->nextCarState(new_car,dt));
+			new_car = this->nextCarState(new_car, dt);
+			result[result.size()-1].push_back(new_car);
 		}
 	}
 }
