@@ -2,6 +2,9 @@
 #define STATE_H
 
 #include <vector>
+#include <iostream>
+
+using namespace std;
 
 class State{
 private:
@@ -35,12 +38,12 @@ public:
 	CarState();
 	CarState(double x_, double y_, double theta_, bool flag_, double delta_);
 
+	friend ostream& operator<<(ostream& os, CarState& car);
+
 	double get_delta();
 	void set_delta(double delta_);
 
 	void compute_primitive(std::vector<std::vector<CarState> > &result) const;
-
-	friend ostream& operator<<(ostream& os, CarState& car);
 };
 
 #endif

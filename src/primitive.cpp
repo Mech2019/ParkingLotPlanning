@@ -18,8 +18,8 @@ CarState CarState::nextCarState(CarState car, double dt) const {
 void CarState::compute_primitive(vector<vector<CarState>> &result) const {
 	double DURATION = 0.5; // time to drive
 	int SAMPLE_POINTS = 10; // sampled points per each primitive
-	double delta_MAX = 30.0 / 180.0*PI; // max steering angle to right
-	double delta_MIN = -30.0 / 180.0*PI; // max steering angle to left
+	double delta_MAX = 30.0 / 180.0*3.1415927; // max steering angle to right
+	double delta_MIN = -30.0 / 180.0*3.1415927; // max steering angle to left
 	vector<double> d_delta = {-15,-10,-5,0,5,10,15}; // change of steering angle for different primitive
 
 	result.clear();
@@ -40,16 +40,16 @@ void CarState::compute_primitive(vector<vector<CarState>> &result) const {
 }
 
 // Test
-int main() {
-	CarState car;
-	int temp;
-	car.set_delta(3.1415926);
-	cout << car << endl;
-
-	vector<vector<CarState>> result;
-	car.compute_primitive(result);
-
-	cin >> temp;
-
-	return 0;
-}
+//int main() {
+//	CarState car;
+//	int temp;
+//	car.set_delta(3.1415926);
+//	cout << car << endl;
+//
+//	vector<vector<CarState>> result;
+//	car.compute_primitive(result);
+//
+//	cin >> temp;
+//
+//	return 0;
+//}
