@@ -43,6 +43,12 @@ public:
 	double get_delta();
 	void set_delta(double delta_);
 
+	// input: 
+	//	empty 2D vector of CarState to store sampled locations
+	// Output: 
+	//	filled 2D vector
+	//	Each row in this vector represents the trajectoy of 1 primitive
+	//	with the last element to be the final location after performing that primitive
 	void compute_primitive(std::vector<std::vector<CarState> > &result) const;
 };
 
