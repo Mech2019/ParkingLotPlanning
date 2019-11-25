@@ -1,8 +1,4 @@
-#include <math.h> 
-#include <stdlib.h>
-#include <iostream>
-#include <vector>
-#include "planner.h"
+#include "util.h"
 
 using namespace std; 
 
@@ -16,8 +12,8 @@ bool intersect_point(State &s1, double x, double y) {
 
 bool onSegment(double x1, double y1, double x2, double y2, double x3, double y3) 
 { 
-    if (x2 <= max(x1, x3) && x2 >= min(x1, x3) && 
-        y2 <= max(y1, y3) && y2 >= min(y1, y3)) 
+    if (x2 <= MAX(x1, x3) && x2 >= MIN(x1, x3) && 
+        y2 <= MAX(y1, y3) && y2 >= MIN(y1, y3)) 
        return true; 
   
     return false; 
@@ -87,20 +83,4 @@ bool collision_check(State &s1, State &s2){
 		}
 	}
 	return false;
-}
-
-int main(){
-//  printf("Start check collision !\n");
-
-  State state1 = State(0, 0, 0, 0);
-  State state2 = State(10, 0, 0, 0);
-  cout << collision_check(state1, state2) << endl;
-
-  State state3 = State(0, 0, 0, 0);
-  State state4 = State(5, 3, 0.54, 0);
-  cout << collision_check(state3, state4) << endl;
-
-//  printf("Finished !\n");
-
-  return 0;
 }
