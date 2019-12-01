@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <functional>
+#include <fstream>
 
 using namespace std;
 
@@ -29,20 +30,26 @@ public:
 	void set_theta(double theta_);
 
 	bool operator==(State *rhs) const;
+	friend std::ostream& operator<<(std::ostream& os, State *s)
+    {
+	    os << s->get_x() << " " << s->get_y() << " " 
+	    	<< s->get_theta() << " " << s->get_flag() << " ";
+	    return os;
+	}
 };
 
-// /* Added comparator and hasher for the State class for future container use */
-// struct StateComparator{
-// 	bool operator()(State *lhs, State *rhs){
-// 		return lhs == rhs;
-// 	}
-// }
+/* Added comparator and hasher for the State class for future container use */
+struct StateComparator{
+	bool operator()(State *lhs, State *rhs){
+		return lhs == rhs;
+	}
+}
 
-// struct StateHasher{
-// 	size_t operator()(State *state) const{
-// 		return std::hash<double>{}(state.get_x());
-// 	}
-// };
+struct StateHasher{
+	size_t operator()(State *state) const{
+		return std::hash<double>{}(state.get_x());
+	}
+};
 
 /*****************************************************************************/
 class CarState : public State {

@@ -33,7 +33,7 @@ private:
 	double map_length;
 	int slot_num;
 	std::vector<State*> slots;
-	std::unordered_set<State*> seen_slots;
+	std::unordered_set<State*, StateHasher, StateComparator> seen_slots;
 	std::vector<State*> unseen_slots;
 public:
 	static_map();
