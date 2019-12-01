@@ -13,14 +13,18 @@ int main(){
 	
 	/* test collision checking */
 	//  printf("Start check collision !\n");
-	State state1 = State(0, 0, 0, 0);
-	State state2 = State(10, 0, 0, 0);
+	State *state1 = new State(0, 0, 0, 0);
+	State *state2 = new State(10, 0, 0, 0);
 	cout << collision_check(state1, state2) << endl;
 
-	State state3 = State(0, 0, 0, 0);
-	State state4 = State(5, 3, 0.54, 0);
+	State *state3 = new State(0, 0, 0, 0);
+	State *state4 = new State(5, 3, 0.54, 0);
 	cout << collision_check(state3, state4) << endl;
 
-	//  printf("Finished !\n");
+	delete(state1);
+	delete(state2);
+	delete(state3);
+	delete(state4);
+	
 	return 0;
 }

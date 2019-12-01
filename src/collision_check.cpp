@@ -2,12 +2,10 @@
 
 using namespace std; 
 
-double h = 4;
-double w = 2;
-
-bool intersect_point(State &s1, double x, double y) {
-	return (x >= s1.get_x() - h && x <= s1.get_x() + h && y <= s1.get_y() + w &&
-	y >= s1.get_y() - w);
+/* the original h, w are declared as static const variable in map.h */
+bool intersect_point(State *s1, double x, double y) {
+	return (x >= s1->get_x() - car_len && x <= s1->get_x() + car_len 
+		&& y <= s1->get_y() + car_wid && y >= s1->get_y() - car_wid);
 }
 
 bool onSegment(double x1, double y1, double x2, double y2, double x3, double y3) 
@@ -51,28 +49,27 @@ bool intersect_lines(double x1, double y1, double x2, double y2, double x3, doub
     return false; 
 }
 
-bool collision_check(State &s1, State &s2){
+bool collision_check(T *s1, T *s2){
 	int direc[] = {1, 1, -1, -1, 1}; 
 
 	std::vector<double> v1, v2;
 	for (int i = 0; i < 4; i++) {
-		v1.push_back(s1.get_x() + direc[i] * (w * sin(s1.get_theta()) + h * cos(s1.get_theta())));
-		v1.push_back(s1.get_y() + direc[i + 1] * (w * cos(s1.get_theta()) + h * sin(s1.get_theta())));
-		v2.push_back(s2.get_x() + direc[i] * (w * sin(s2.get_theta()) + h * cos(s2.get_theta())));
-		v2.push_back(s2.get_y() + direc[i + 1] * (w * cos(s2.get_theta()) + h * sin(s2.get_theta())));
+		v1->push_back(s1->get_x() + direc[i] * (w * sin(s1->get_theta()) + h * cos(s1->get_theta())));
+		v1->push_back(s1->get_y() + direc[i + 1] * (w * cos(s1->get_theta()) + h * sin(s1->get_theta())));
+		v2->push_back(s2->get_x() + direc[i] * (w * sin(s2->get_theta()) + h * cos(s2->get_theta())));
+		v2->push_back(s2->get_y() + direc[i + 1] * (w * cos(s2->get_theta()) + h * sin(s2->get_theta())));
 	}
 
-	v1.push_back(s1.get_x() + (w * sin(s1.get_theta()) + h * cos(s1.get_theta())));
-	v1.push_back(s1.get_y() + (w * cos(s1.get_theta()) + h * sin(s1.get_theta())));
-	v2.push_back(s2.get_x() + (w * sin(s2.get_theta()) + h * cos(s2.get_theta())));
-	v2.push_back(s2.get_y() + (w * cos(s2.get_theta()) + h * sin(s2.get_theta())));
+	v1->push_back(s1->get_x() + (w * sin(s1->get_theta()) + h * cos(s1->get_theta())));
+	v1->push_back(s1->get_y() + (w * cos(s1->get_theta()) + h * sin(s1->get_theta())));
+	v2->push_back(s2->get_x() + (w * sin(s2->get_theta()) + h * cos(s2->get_theta())));
+	v2->push_back(s2->get_y() + (w * cos(s2->get_theta()) + h * sin(s2->get_theta())));
 
 	for (int i = 0; i < 4; i++) {
 		if (intersect_point(s1, v2[2 * i], v2[2 * i + 1])) {
 		return true;
 		}
 	}
-//    cout << "point not in rectangle" <<endl;
 	
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {

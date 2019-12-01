@@ -52,7 +52,13 @@ void State::set_theta(double theta_) {
 	theta = theta_;
 }
 
-
+bool State::operator==(State *rhs) const{
+	if (this->x != rhs->get_x() || this->y != rhs->get_y()
+		|| this->theta != rhs->get_theta() 
+		|| this->flag != rhs->get_flag())
+		return false;
+	return true;
+}
 
 // =========================================
 

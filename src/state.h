@@ -3,15 +3,16 @@
 
 #include <vector>
 #include <iostream>
+#include <functional>
 
 using namespace std;
 
 class State{
-private:
+protected:	// changed private to protected for inheritance convenience
 	double x;
 	double y;
 	double theta;
-	bool flag; //ego_vehicle: forward/backward; map: empty/full
+	bool flag; // ego_vehicle: forward/backward; map: empty/full
 
 public:
 	//constructor
@@ -26,9 +27,24 @@ public:
 	void set_x(double x_);
 	void set_y(double y_);
 	void set_theta(double theta_);
+
+	bool operator==(State *rhs) const;
 };
 
+// /* Added comparator and hasher for the State class for future container use */
+// struct StateComparator{
+// 	bool operator()(State *lhs, State *rhs){
+// 		return lhs == rhs;
+// 	}
+// }
 
+// struct StateHasher{
+// 	size_t operator()(State *state) const{
+// 		return std::hash<double>{}(state.get_x());
+// 	}
+// };
+
+/*****************************************************************************/
 class CarState : public State {
 private:
 	double delta; // steering angle
