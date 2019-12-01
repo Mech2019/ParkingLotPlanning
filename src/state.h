@@ -40,14 +40,14 @@ public:
 
 /* Added comparator and hasher for the State class for future container use */
 struct StateComparator{
-	bool operator()(State *lhs, State *rhs){
+	bool operator()(State *lhs, State *rhs) const{
 		return lhs == rhs;
 	}
-}
+};
 
 struct StateHasher{
 	size_t operator()(State *state) const{
-		return std::hash<double>{}(state.get_x());
+		return std::hash<double>{}(state->get_x());
 	}
 };
 

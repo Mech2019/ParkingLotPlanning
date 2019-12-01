@@ -38,22 +38,28 @@ unordered_set<State*, StateHasher, StateComparator> static_map::get_seen_slots()
 void static_map::update_seen_slots(CarState *ego){
 	double ego_x = ego->get_x();
 	double ego_y = ego->get_y();
-	auto it = unseen_slots.begin(); 
-	while (it! = unseen_slots.end()){
+	auto it = unseen_slots.begin();
+	while (it != unseen_slots.end()){
 		State *slot = *it;
 		double slot_x = slot->get_x();
 		double slot_y = slot->get_y();
 		double dx = ego_x - slot_x;
 		double dy = ego_y - slot_y;
 		// skip slots outside the sensor range
-		if (sqrt(dx*dx + dy*dy) > sensor_range)
+		if (sqrt(dx*dx + dy*dy) > sensor_range){
+			++it;
 			continue;
+		}
 		// skip slots that are unseen
-		if (seen_slots.find(slot) != seen_slots.end())
+		if (seen_slots.find(slot) != seen_slots.end()){
+			++it;
 			continue;
+		}
 		// check for obstacles 
 		bool obstructed = false;
-		for (int j = 0; j < this->slot_num; j++){
+		// printf("************\n");
+		for (int j = 0; j < this->slot_num && !obstructed; j++){
+			// printf("j = %d\n", j);
 			State *tmp = slots[j];
 			double tmp_x = tmp->get_x();
 			double tmp_y = tmp->get_y();
@@ -74,7 +80,8 @@ void static_map::update_seen_slots(CarState *ego){
 			vector<double> y_coord = {lly, uly, ury, lry, lly};
 			// perform line of sight check here
 			// first calculate the line expression of the ego to the target
-			for (int k = 0; k < 4; k++){
+			for (int k = 0; k < 4 && !obstructed; k++){
+				// printf("k = %d\n", k);
 				double x1 = slot_x, x2 = ego_x;
 				double y1 = slot_y, y2 = ego_y;
 				double x3 = x_coord[k], x4 = x_coord[k+1];
@@ -82,7 +89,6 @@ void static_map::update_seen_slots(CarState *ego){
 				if (x1 == x2 && x3 == x4){
 					if (x1 == x3){
 						obstructed = true;
-						break;
 					}
 				} else if (x1 == x2 && x3 != x4) {
 					double m2 = (y4 - y3) / (x4 - x3);
@@ -90,11 +96,11 @@ void static_map::update_seen_slots(CarState *ego){
 
 					double x_intersect = x1;
 					double y_intersect = m2 * x_intersect + b2;
-					if ((x_intersect-x3)*(x_intersect-x4) <= 0 
+					if ((x_intersect-x1)*(x_intersect-x2) <= 0
+						&& (x_intersect-x3)*(x_intersect-x4) <= 0
 						&& (y_intersect-y1)*(y_intersect-y2) <= 0
 						&& (y_intersect-y3)*(y_intersect-y4) <= 0){
 						obstructed = true;
-						break;
 					}
 				} else if (x1 != x2 && x3 == x4) {
 					double m1 = (y2 - y1) / (x2 - x1);
@@ -102,18 +108,21 @@ void static_map::update_seen_slots(CarState *ego){
 
 					double x_intersect = x3;
 					double y_intersect = m1 * x_intersect + b1;
-					if ((x_intersect-x1)*(x_intersect-x2) <= 0 
+					if ((x_intersect-x1)*(x_intersect-x2) <= 0
+						&& (x_intersect-x3)*(x_intersect-x4) <= 0
 						&& (y_intersect-y1)*(y_intersect-y2) <= 0
 						&& (y_intersect-y3)*(y_intersect-y4) <= 0){
 						obstructed = true;
-						break;
 					}
+					// printf("case3, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
 				} else {
 					// calculate slope and y-intersection for line
 					double m1 = (y2 - y1) / (x2 - x1);
 					double b1 = y1 - m1 * x1;
 					double m2 = (y4 - y3) / (x4 - x3);
 					double b2 = y3 - m2 * x3;
+					// printf("line 1: m1 = %lf, b1 = %lf\n", m1, b1);
+					// printf("line 2: m2 = %lf, b2 = %lf\n", m2, b2);
 					// calculate intersection coordinate
 					double x_intersect = (b2-b1)/(m1-m2);
 					double y_intersect = m1 * x_intersect + b1;
@@ -123,20 +132,21 @@ void static_map::update_seen_slots(CarState *ego){
 						&& (y_intersect-y1)*(y_intersect-y2) <= 0
 						&& (y_intersect-y3)*(y_intersect-y4) <= 0){
 						obstructed = true;
-						break;
 					}
+					// printf("case4, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
 				}
 			}
-			if (obstructed)
-				break;
+
 		}
 		// remove from unseen_slots if seen
 		// add to seen_slots if seen
 		if (!obstructed){
+			// printf("erased\n");
 			unseen_slots.erase(it);
-			seen_slots.push_back(slot);	
+			seen_slots.insert(slot);	
 		} else {
-			it++;
+			// printf("continued\n");
+			++it;
 		}		
 	}
 }
@@ -153,9 +163,8 @@ void static_map::update_seen_slots(CarState *ego){
 void parse_static_map(const char* filename, vector<vector<double>>& input){
 	FILE *fp;
 	fp = fopen(filename, "r");
-	double x,y,theta;
-	int full;
-	while (fscanf(fp, "%lf,%lf,%lf,%d\n", &x, &y, &theta, &full) == 3){
+	double x,y,theta,full;
+	while (fscanf(fp, "%lf,%lf,%lf,%lf\n", &x, &y, &theta, &full) == 4){
 		input.push_back({x,y,theta,full});
 	}
 	fclose(fp);

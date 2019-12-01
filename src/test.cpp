@@ -32,15 +32,25 @@ int main(){
 	delete(state4);
 	
 	/* test sensor reading */
-	CarState *ego_vehicle = new CarState(7.5, 2.75, PI/2, 1, 0.0);
+	CarState *ego_vehicle = new CarState(8.5, 2.75, PI/2, 1, 0.0);
+	printf("line of sight test: \n");
 	env->update_seen_slots(ego_vehicle);
 	auto seen_slots = env->get_seen_slots();
-	for (auto it = seen_slots.begin(), it != seen_slots.end(); it++){
+	for (auto it = seen_slots.begin(); it != seen_slots.end(); it++){
 		auto slot = *it;
 		cout << slot << endl;
 	}
-
 	delete ego_vehicle;
+
+	printf("second position: \n");
+	CarState *ego_vehicle1 = new CarState(25.5, 10.75, PI/2, 1, 0.0);
+	env->update_seen_slots(ego_vehicle1);
+	seen_slots = env->get_seen_slots();
+	for (auto it = seen_slots.begin(); it != seen_slots.end(); it++){
+		auto slot = *it;
+		cout << slot << endl;
+	}
+	delete ego_vehicle1;
 	delete env;
 	return 0;
 }

@@ -43,7 +43,7 @@ public:
 	double get_map_width();
 	double get_map_length();
 	std::vector<State*> get_slots();
-	std::vector<State*> get_seen_slots();
+	std::unordered_set<State*, StateHasher, StateComparator> get_seen_slots();
 	void update_seen_slots(CarState *ego);
 };
 

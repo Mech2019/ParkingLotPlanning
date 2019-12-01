@@ -49,21 +49,22 @@ bool intersect_lines(double x1, double y1, double x2, double y2, double x3, doub
     return false; 
 }
 
-bool collision_check(T *s1, T *s2){
+// template <class T*>
+bool collision_check(State *s1, State *s2){
 	int direc[] = {1, 1, -1, -1, 1}; 
 
 	std::vector<double> v1, v2;
 	for (int i = 0; i < 4; i++) {
-		v1->push_back(s1->get_x() + direc[i] * (w * sin(s1->get_theta()) + h * cos(s1->get_theta())));
-		v1->push_back(s1->get_y() + direc[i + 1] * (w * cos(s1->get_theta()) + h * sin(s1->get_theta())));
-		v2->push_back(s2->get_x() + direc[i] * (w * sin(s2->get_theta()) + h * cos(s2->get_theta())));
-		v2->push_back(s2->get_y() + direc[i + 1] * (w * cos(s2->get_theta()) + h * sin(s2->get_theta())));
+		v1.push_back(s1->get_x() + direc[i] * (car_wid * sin(s1->get_theta()) + car_len * cos(s1->get_theta())));
+		v1.push_back(s1->get_y() + direc[i + 1] * (car_wid * cos(s1->get_theta()) + car_len * sin(s1->get_theta())));
+		v2.push_back(s2->get_x() + direc[i] * (car_wid * sin(s2->get_theta()) + car_len * cos(s2->get_theta())));
+		v2.push_back(s2->get_y() + direc[i + 1] * (car_wid * cos(s2->get_theta()) + car_len * sin(s2->get_theta())));
 	}
 
-	v1->push_back(s1->get_x() + (w * sin(s1->get_theta()) + h * cos(s1->get_theta())));
-	v1->push_back(s1->get_y() + (w * cos(s1->get_theta()) + h * sin(s1->get_theta())));
-	v2->push_back(s2->get_x() + (w * sin(s2->get_theta()) + h * cos(s2->get_theta())));
-	v2->push_back(s2->get_y() + (w * cos(s2->get_theta()) + h * sin(s2->get_theta())));
+	v1.push_back(s1->get_x() + (car_wid * sin(s1->get_theta()) + car_len * cos(s1->get_theta())));
+	v1.push_back(s1->get_y() + (car_wid * cos(s1->get_theta()) + car_len * sin(s1->get_theta())));
+	v2.push_back(s2->get_x() + (car_wid * sin(s2->get_theta()) + car_len * cos(s2->get_theta())));
+	v2.push_back(s2->get_y() + (car_wid * cos(s2->get_theta()) + car_len * sin(s2->get_theta())));
 
 	for (int i = 0; i < 4; i++) {
 		if (intersect_point(s1, v2[2 * i], v2[2 * i + 1])) {
