@@ -33,7 +33,7 @@ private:
 	double map_length;
 	int slot_num;
 	std::vector<State*> slots;
-	std::unordered_set<State*, StateHasher, StateComparator> seen_slots;
+	std::unordered_set<State*, StateHasher, StateComparator> goal_list;
 	std::vector<State*> unseen_slots;
 public:
 	static_map();
@@ -43,8 +43,8 @@ public:
 	double get_map_width();
 	double get_map_length();
 	std::vector<State*> get_slots();
-	std::unordered_set<State*, StateHasher, StateComparator> get_seen_slots();
-	void update_seen_slots(CarState *ego);
+	std::unordered_set<State*, StateHasher, StateComparator> get_goal_list();
+	void update_goal_list(CarState *ego);
 };
 
 void parse_static_map(const char* filename, std::vector<std::vector<double>>& input);

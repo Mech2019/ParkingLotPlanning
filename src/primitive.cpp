@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "state.h"
+#include "util.h"
 
 using namespace std;
 
@@ -17,11 +18,12 @@ CarState CarState::nextCarState(CarState car, double dt) const {
 //	Each row in this vector represents the trajectoy of 1 primitive
 //	with the last element to be the final location after performing that primitive
 void CarState::compute_primitive(vector<vector<CarState>> &result) const {
-	double DURATION = 0.5; // time to drive
+	double DURATION = 0.5; 	// time to drive
 	int SAMPLE_POINTS = 10; // sampled points per each primitive
-	double delta_MAX = 30.0 / 180.0*3.1415927; // max steering angle to right
-	double delta_MIN = -30.0 / 180.0*3.1415927; // max steering angle to left
-	vector<double> d_delta = {-15,-10,-5,0,5,10,15}; // change of steering angle for different primitive
+	double delta_MAX = 30.0 / 180.0 * PI; 	// max steering angle to right
+	double delta_MIN = -30.0 / 180.0 * PI; 	// max steering angle to left
+	// change of steering angle for different primitive
+	vector<double> d_delta = {-15, -10, -5, 0, 5, 10, 15}; // change to radian!!!
 
 	result.clear();
 	for (double d : d_delta) {

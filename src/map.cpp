@@ -8,7 +8,10 @@ static_map::static_map(double wid, double len, vector<vector<double>> input){
 	this->map_length = len;
 	this->slot_num = input.size();
 	for (int i = 0; i < input.size(); i++){
+		// slots contain all slots with true information
 		slots.push_back(new State(input[i][0], input[i][1], input[i][2], input[i][3]));
+		// goal list initially contains slots with assumed information
+		goal_list.insert(new State(input[i][0], input[i][1], input[i][2], false));
 	}
 	unseen_slots = slots;
 }
@@ -29,13 +32,13 @@ double static_map::get_map_length(){
 vector<State*> static_map::get_slots(){
 	return this->slots;
 }
-unordered_set<State*, StateHasher, StateComparator> static_map::get_seen_slots(){
-	return this->seen_slots;
+unordered_set<State*, StateHasher, StateComparator> static_map::get_goal_list(){
+	return this->goal_list;
 }
 /*
  * This function takes in the ego vehicle state and update seen_slots
  */
-void static_map::update_seen_slots(CarState *ego){
+void static_map::update_goal_list(CarState *ego){
 	double ego_x = ego->get_x();
 	double ego_y = ego->get_y();
 	auto it = unseen_slots.begin();
@@ -50,11 +53,11 @@ void static_map::update_seen_slots(CarState *ego){
 			++it;
 			continue;
 		}
-		// skip slots that are unseen
-		if (seen_slots.find(slot) != seen_slots.end()){
-			++it;
-			continue;
-		}
+		// // skip slots that are unseen
+		// if (seen_slots.find(slot) != seen_slots.end()){
+		// 	++it;
+		// 	continue;
+		// }
 		// check for obstacles 
 		bool obstructed = false;
 		// printf("************\n");
@@ -138,16 +141,26 @@ void static_map::update_seen_slots(CarState *ego){
 			}
 
 		}
+		// printf("finished line of sight check\n");
 		// remove from unseen_slots if seen
 		// add to seen_slots if seen
 		if (!obstructed){
 			// printf("erased\n");
 			unseen_slots.erase(it);
-			seen_slots.insert(slot);	
+			// if this slot is not empty, erase it from the goal list
+			if ((slot->get_flag())){
+				cout << slot << endl;
+				auto goal_it = goal_list.find(slot);
+				if (goal_it != goal_list.end()){
+					// printf("found the slot in the goal list\n");
+					goal_list.erase(goal_it);	
+				}
+			}
 		} else {
 			// printf("continued\n");
 			++it;
 		}		
+		// printf("finished operating on goal_list\n");
 	}
 }
 /*
@@ -162,7 +175,9 @@ void static_map::update_seen_slots(CarState *ego){
  */
 void parse_static_map(const char* filename, vector<vector<double>>& input){
 	FILE *fp;
-	fp = fopen(filename, "r");
+	if (!(fp = fopen(filename, "r"))){
+		perror("fopen error");
+	}
 	double x,y,theta,full;
 	while (fscanf(fp, "%lf,%lf,%lf,%lf\n", &x, &y, &theta, &full) == 4){
 		input.push_back({x,y,theta,full});

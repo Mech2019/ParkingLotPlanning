@@ -29,7 +29,18 @@ public:
 	void set_y(double y_);
 	void set_theta(double theta_);
 
-	bool operator==(State *rhs) const;
+	// bool operator==(State *rhs) const;
+	// friend bool operator==(State& lhs, State& rhs) const{
+	// 	// printf("im here 1\n");
+	// 	if (lhs.get_x() != rhs.get_x() || lhs.get_y() != rhs.get_y()){
+	// 		printf("im here\n");
+	// 		// || this->theta != rhs->get_theta()) 
+	// 		// || this->flag != rhs->get_flag()) // do we need to have the same flag?
+	// 		return false;
+	// 	}
+	// 	return true;
+	// }
+
 	friend std::ostream& operator<<(std::ostream& os, State *s)
     {
 	    os << s->get_x() << " " << s->get_y() << " " 
@@ -41,7 +52,13 @@ public:
 /* Added comparator and hasher for the State class for future container use */
 struct StateComparator{
 	bool operator()(State *lhs, State *rhs) const{
-		return lhs == rhs;
+		if (lhs->get_x() != rhs->get_x() || lhs->get_y() != rhs->get_y()){
+			// printf("im here\n");
+			// || this->theta != rhs->get_theta()) 
+			// || this->flag != rhs->get_flag()) // do we need to have the same flag?
+			return false;
+		}
+		return true;
 	}
 };
 

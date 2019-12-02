@@ -9,7 +9,6 @@
 #include "util.h"
 
 #define CAR_SPEED 5.0
-#define PI 3.1415927
 
 
 #endif
