@@ -72,7 +72,7 @@ public:
 	//	filled 2D vector
 	//	Each row in this vector represents the trajectoy of 1 primitive
 	//	with the last element to be the final location after performing that primitive
-	void compute_primitive(std::vector<std::vector<CarState> > &result) const;
+	void compute_primitive(std::vector<std::vector<CarState> > &result, vector<State*> & obstacles) const;
 };
 
 #endif

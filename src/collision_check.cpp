@@ -82,3 +82,12 @@ bool collision_check(State *s1, State *s2){
 	}
 	return false;
 }
+
+bool total_collision_check(State *car, vector<State*> & obstacles) {
+	bool result = false;
+	for (State *s2 : obstacles) {
+		result = result || collision_check(car, s2);
+		if (result) return result;
+	}
+	return result;
+}
