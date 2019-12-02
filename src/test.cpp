@@ -2,6 +2,8 @@
 
 using namespace std;
 
+static const char *traj_fn = "traj.csv";
+
 int main(){
 	printf("This is a test script for functionality.\n");
 	/* test map parsing */
@@ -47,7 +49,9 @@ int main(){
 	}
 
 	CarState *ego_vehicle = new CarState(8.5, 2.75, PI/2, 1, 0.0);
+	ofstream traj_file(traj_fn);
 	for (int i = 0; i < 20; i++){
+		traj_file << ego_vehicle->get_x() << "," << ego_vehicle->get_y() << "," << ego_vehicle->get_theta() << endl;
 		ego_vehicle->set_y(ego_vehicle->get_y() + 0.1*5.0);
 		printf("line of sight test: \n");
 		printf("ego_vechicle state:\n");
@@ -60,6 +64,7 @@ int main(){
 			cout << slot << endl;
 		}
 	}
+	traj_file.close();
 	delete ego_vehicle;
 	delete env;
 	return 0;
