@@ -1,5 +1,6 @@
 #include <iostream>
 #include "state.h"
+#include "util.h"
 
 using namespace std;
 
@@ -84,6 +85,6 @@ void CarState::set_delta(double delta_) {
 
 ostream & operator<<(ostream & os, CarState & car)
 {
-	os << car.get_x() << ", " << car.get_y() << ", " << car.get_theta() / 3.1415927 * 180.0 << ", " << car.get_delta() / 3.1415927 * 180.0;
+	os << car.get_x() << ", " << car.get_y() << ", " << TODEG(car.get_theta()) << ", " << TODEG(car.get_delta());
 	return os;
 }

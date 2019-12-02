@@ -15,7 +15,17 @@
 #define	MIN(A, B)	((A) < (B) ? (A) : (B))
 #endif
 
+
 #define PI 3.1415927
+
+#if !defined(TORAD)
+#define	TORAD(A)	((A)*3.14159265359/180.0)
+#endif
+
+#if !defined(TODEG)
+#define	TODEG(A)	((A)/3.14159265359*180.0)
+#endif
+
 // global static variables
 static const char *map_name = "map.csv";
 static const double slot_wid = 2.5;
