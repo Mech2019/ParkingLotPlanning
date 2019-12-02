@@ -1,7 +1,7 @@
 scenario_gen_proposal;
 map = load('../src/map.csv');
 traj = load('../src/traj.csv');
-%% visualize
+%% static visualize
 % % parking lot map
 % figure()
 % for i = 1:total_slot_num
