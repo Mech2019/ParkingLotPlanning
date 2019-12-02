@@ -1,3 +1,4 @@
+scenario_gen_proposal;
 map = load('../src/map.csv');
 
 %% visualize
@@ -23,12 +24,12 @@ rectangle('Position',[8.5 - car_wid/2, ...
 hold on;
 draw_circle(8.5, 2.75, sensor_rad);
 hold on;
-% car position 2
-rectangle('Position',[25.5 - car_wid/2, ...
-    10.75 - car_len/2, car_wid, car_len], ...
-    'FaceColor', 'r');
-hold on;
-draw_circle(25.5, 10.75, sensor_rad);
+% % car position 2
+% rectangle('Position',[25.5 - car_wid/2, ...
+%     10.75 - car_len/2, car_wid, car_len], ...
+%     'FaceColor', 'r');
+% hold on;
+% draw_circle(25.5, 10.75, sensor_rad);
 hold off;
 axis equal
 xlim([0 parking_lot_width]);ylim([0 parking_lot_length]);

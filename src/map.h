@@ -48,5 +48,7 @@ public:
 };
 
 void parse_static_map(const char* filename, std::vector<std::vector<double>>& input);
+bool isLineofSightObstructed(double x1, double x2, double x3, double x4,
+								double y1, double y2, double y3, double y4);
 
 #endif

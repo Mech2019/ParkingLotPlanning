@@ -47,25 +47,20 @@ int main(){
 	}
 
 	CarState *ego_vehicle = new CarState(8.5, 2.75, PI/2, 1, 0.0);
-	printf("line of sight test: \n");
-	env->update_goal_list(ego_vehicle);
-	auto goal = env->get_goal_list();
-	printf("result:\n");
-	for (auto it = goal.begin(); it != goal.end(); it++){
-		auto slot = *it;
-		cout << slot << endl;
+	for (int i = 0; i < 20; i++){
+		ego_vehicle->set_y(ego_vehicle->get_y() + 0.1*5.0);
+		printf("line of sight test: \n");
+		printf("ego_vechicle state:\n");
+		cout << ego_vehicle << endl;
+		env->update_goal_list(ego_vehicle);
+		auto goal = env->get_goal_list();
+		printf("result:\n");
+		for (auto it = goal.begin(); it != goal.end(); it++){
+			auto slot = *it;
+			cout << slot << endl;
+		}
 	}
 	delete ego_vehicle;
-
-	// printf("second position: \n");
-	// CarState *ego_vehicle1 = new CarState(25.5, 10.75, PI/2, 1, 0.0);
-	// env->update_goal_list(ego_vehicle1);
-	// goal = env->get_goal_list();
-	// for (auto it = goal.begin(); it != goal.end(); it++){
-	// 	auto slot = *it;
-	// 	cout << slot << endl;
-	// }
-	// delete ego_vehicle1;
 	delete env;
 	return 0;
 }
