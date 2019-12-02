@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "state.h"
+#include "util.h"
 
 using namespace std;
 
@@ -19,9 +20,9 @@ CarState CarState::nextCarState(CarState car, double dt) const {
 void CarState::compute_primitive(vector<vector<CarState>> &result) const {
 	double DURATION = 0.5; // time to drive
 	int SAMPLE_POINTS = 10; // sampled points per each primitive
-	double delta_MAX = 30.0 / 180.0*3.1415927; // max steering angle to right
-	double delta_MIN = -30.0 / 180.0*3.1415927; // max steering angle to left
-	vector<double> d_delta = {-15,-10,-5,0,5,10,15}; // change of steering angle for different primitive
+	double delta_MAX = TORAD(30); // max steering angle to right
+	double delta_MIN = TORAD(-30); // max steering angle to left
+	vector<double> d_delta = {TORAD(-15),TORAD(-10),TORAD(-5),TORAD(0),TORAD(5),TORAD(10),TORAD(15)}; // change of steering angle for different primitive
 
 	result.clear();
 	for (double d : d_delta) {
