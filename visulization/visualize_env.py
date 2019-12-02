@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import cv2
 import math
+import matplotlib.animation as animation
 
 
 # define geometry
@@ -74,6 +75,12 @@ def draw_rectangle(img, centre, theta, width, height):
                    (int(p1_new[0, 0]), int(p1_new[0, 1])), (255, 0, 0), 1)
     return img
 
+def drawCar(img, center_x, center_y, theta):
+    cv2.circle(img, (int(center_x), int(center_y)), 5, (50, 168, 54), -1)
+    img = draw_rectangle(img, [center_x, center_y], theta, car_length*ratio,
+                         car_width*ratio)
+    return img
+
 
 def main():
 
@@ -114,14 +121,13 @@ def main():
     for i in range(traj_num):
         print(i)
         car_pos = car_traj_input[i, :]
-        theta = math.pi/2
         center_x = car_pos[0] * 10
         center_y = car_pos[1] * 10
+        theta = car_pos[2]
+        img = drawCar(img, center_x, center_y, theta)
 
-        cv2.circle(img, (int(center_x), int(center_y)), 5, (50, 168, 54), -1)
-        img = draw_rectangle(img, [center_x, center_y], theta, car_width*ratio,
-                             car_length*ratio)
-
+    # ani = animation.FuncAnimation(fig, update_points, np.arange(0, traj_num),
+    #                               interval=100, blit=True)
     plt.imshow(img, 'brg')
     plt.savefig("env.png")
     plt.show()
