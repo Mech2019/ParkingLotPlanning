@@ -7,6 +7,10 @@
 #include <vector>
 #include "state.h"
 
+#if !defined(PI)
+#define	PI 3.14159265359
+#endif
+
 #if !defined(MAX)
 #define	MAX(A, B)	((A) > (B) ? (A) : (B))
 #endif
@@ -19,11 +23,11 @@
 #define PI 3.1415927
 
 #if !defined(TORAD)
-#define	TORAD(A)	((A)*3.14159265359/180.0)
+#define	TORAD(A)	((A)*PI/180.0)
 #endif
 
 #if !defined(TODEG)
-#define	TODEG(A)	((A)/3.14159265359*180.0)
+#define	TODEG(A)	((A)/PI*180.0)
 #endif
 
 // global static variables
@@ -35,7 +39,8 @@ static const double map_len = 28.0;
 static const double sensor_range = 10.0;
 static const double car_wid = 1.8;
 static const double car_len = 4.5;
-
+static const double car_speed = 5.0; // in m/s
+static const double wheel_base = 2.7; // distance between front and back wheel axis
 
 /* helper function for collision check */
 bool intersect_point(State *s1, double x, double y);
