@@ -28,14 +28,67 @@ def draw_rectangle(img, centre, theta, width, height):
                    (int(p1_new[0, 0]), int(p1_new[0, 1])), (255, 0, 0), 1)
     return img
 
-image = plt.figure()
+# image = plt.figure()
+#
+# img = np.ones((280, 450, 3), np.uint8) * 80
+# theta = 1.55
+# centre = [100, 100]
+# width = 40
+# height = 20
+# img = draw_rectangle(img, centre, theta, width, height)
+#
+# plt.imshow(img, 'brg')
+# plt.show()
 
-img = np.ones((280, 450, 3), np.uint8) * 80
-theta = 1.55
-centre = [100, 100]
-width = 40
-height = 20
-img = draw_rectangle(img, centre, theta, width, height)
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
-plt.imshow(img, 'brg')
-plt.show()
+# %matplotlib inline
+
+# x = np.linspace(0, 2*np.pi, 100)
+# y = np.sin(x)
+#
+# fig = plt.figure(tight_layout=True)
+# plt.plot(x,y)
+# plt.grid(ls="--")
+# plt.show()
+
+
+def update_points(num):
+    point_ani.set_data(x[num], y[num])
+    return point_ani,
+
+
+# x = np.linspace(0, 2*np.pi, 100)
+# y = np.sin(x)
+#
+# fig = plt.figure(tight_layout=True)
+# plt.plot(x,y)
+# point_ani, = plt.plot(x[0], y[0], "ro")
+# plt.grid(ls="--")
+#
+# ani = animation.FuncAnimation(fig, update_points, np.arange(0, 100), interval=100, blit=True)
+#
+# # ani.save('sin_test2.gif', writer='imagemagick', fps=10)
+# plt.show()
+
+
+import numpy as np
+from cv2 import VideoWriter, VideoWriter_fourcc
+
+height = 720
+width = 1280
+FPS = 24
+seconds = 10
+
+fourcc = VideoWriter_fourcc(*'MP42')
+video = VideoWriter('./noise.avi', fourcc, float(FPS), (width, height))
+
+for _ in range(FPS*seconds):
+    frame = np.random.randint(0, 256,
+                              (height, width, 3),
+                              dtype=np.uint8)
+    video.write(frame)
+video.release()

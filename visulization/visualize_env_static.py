@@ -6,6 +6,8 @@ import math
 import matplotlib.animation as animation
 
 
+
+
 # define geometry
 park_width = 2.5
 park_length = 5.5
@@ -23,6 +25,13 @@ plan_file = "plan_sample.txt"
 car_traj_input = np.loadtxt(plan_file, delimiter=',', skiprows=0)
 
 print(car_traj_input)
+
+
+traj_num = car_traj_input.shape[0]
+car_pos_x = car_traj_input[:, 0]
+car_pos_y = car_traj_input[:, 1]
+point_ani, = plt.plot(car_pos_x[0], car_pos_y[0], 'r')
+
 
 
 def read_map_data(map_file):
@@ -81,6 +90,11 @@ def drawCar(img, center_x, center_y, theta):
                          car_width*ratio)
     return img
 
+def update_points(num):
+    point_ani.set_data(car_pos_x[num], car_pos_y[num])
+    return point_ani,
+
+
 
 def main():
 
@@ -91,7 +105,7 @@ def main():
     for i in range(n):
         rectangles[i] = getRectanglePointsFromCenter(x[i], y[i])
 
-    plt.figure(figsize=(32, 20))
+    fig = plt.figure(figsize=(32, 20))
     img = np.ones((280, 450, 3), np.uint8) * 80
 
     # draw rectangles
@@ -115,9 +129,6 @@ def main():
     # cv2.rectangle(img, (int(pt1_x), int(pt1_y)), (int(pt2_x), int(pt2_y)),
     #               (255, 0, 0), cv2.FILLED)
 
-
-    traj_num = car_traj_input.shape[0]
-
     for i in range(traj_num):
         print(i)
         car_pos = car_traj_input[i, :]
@@ -126,8 +137,11 @@ def main():
         theta = car_pos[2]
         img = drawCar(img, center_x, center_y, theta)
 
-    # ani = animation.FuncAnimation(fig, update_points, np.arange(0, traj_num),
-    #                               interval=100, blit=True)
+
+
+
+    ani = animation.FuncAnimation(fig, update_points, np.arange(0, traj_num),
+                                   interval=100, blit=True)
     plt.imshow(img, 'brg')
     plt.savefig("env.png")
     plt.show()
