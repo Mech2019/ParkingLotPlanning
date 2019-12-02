@@ -38,9 +38,9 @@ CarState CarState::nextCarState(CarState start, double dt) const {
 	double new_x_global, new_y_global;
 	double rot_x, rot_y, rot_theta;
 
-	if (delta == 0) {
-		new_x_global = start_x + cos(theta);
-		new_y_global = start_y + sin(theta);
+	if (delta == 0.0) {
+		new_x_global = start_x + cos(theta)*curve_length;
+		new_y_global = start_y + sin(theta)*curve_length;
 	}
 	else {
 		//find rotation center
@@ -77,11 +77,12 @@ CarState CarState::nextCarState(CarState start, double dt) const {
 //	Each row in this vector represents the trajectoy of 1 primitive
 //	with the last element to be the final location after performing that primitive
 void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*> & obstacles) const {
-	const double DURATION = 0.5; // time to drive
-	const int SAMPLE_POINTS = 10; // sampled points per each primitive
+	const double DURATION = 1.0; // time to drive
+	const int SAMPLE_POINTS = 20; // sampled points per each primitive
 	const double delta_MAX = TORAD(30); // max steering angle to right
 	const double delta_MIN = TORAD(-30); // max steering angle to left
-	vector<double> d_delta = {TORAD(-15),TORAD(-10),TORAD(-5),TORAD(0),TORAD(5),TORAD(10),TORAD(15)}; // change of steering angle for different primitive
+	vector<double> d_delta = { TORAD(-30),TORAD(-25),TORAD(-20),TORAD(-15),TORAD(-10),
+		TORAD(-5),TORAD(0),TORAD(5),TORAD(10),TORAD(15),TORAD(20),TORAD(25),TORAD(30)}; // change of steering angle for different primitive
 
 	result.clear();
 	for (double d : d_delta) {
@@ -107,23 +108,26 @@ void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*
 }
 
 // Test
-int main() {
-	CarState car;
-	int temp;
-	car.set_delta(0.0);
-	cout << car << endl;
-
-	vector<vector<CarState>> result;
-	vector<State*> obstacle;
-	car.compute_primitive(result, obstacle);
-
-	for (auto x : result) {
-		for (auto y : x) {
-			cout << y.get_x() << "," << y.get_y() << "," << y.get_theta() << endl;
-		}
-		cout << "=============================\n";
-	}
-
-	cin >> temp;
-	return 0;
-}
+//int main() {
+//	CarState car;
+//	int temp;
+//	car.set_x(1.0);
+//	car.set_y(1.0);
+//	car.set_theta(TORAD(45));
+//	car.set_delta(0);
+//	cout << car << endl;
+//
+//	vector<vector<CarState>> result;
+//	vector<State*> obstacle;
+//	car.compute_primitive(result, obstacle);
+//
+//	for (auto x : result) {
+//		for (auto y : x) {
+//			cout << y.get_x() << "," << y.get_y() << "," << y.get_theta() << endl;
+//		}
+//		cout << "\n";
+//	}
+//
+//	cin >> temp;
+//	return 0;
+//}
