@@ -38,7 +38,6 @@ void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*
 		new_car.set_delta(new_delta);
 		bool obstacle_free = true;
 		double dt = DURATION / SAMPLE_POINTS;
-
 		for (int i = 0; i < SAMPLE_POINTS; i++) {
 			new_car = this->nextCarState(new_car, dt);
 			temp.push_back(new_car);
@@ -53,17 +52,23 @@ void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*
 }
 
 // Test
-// int main() {
-// 	CarState car;
-// 	int temp;
-// 	car.set_delta(3.1415926);
-// 	cout << car << endl;
-
-// 	vector<vector<CarState>> result;
-// 	vector<State*> obstacle;
-// 	car.compute_primitive(result, obstacle);
-
-// 	cin >> temp;
-
-// 	return 0;
-// }
+//int main() {
+//	CarState car;
+//	int temp;
+//	car.set_delta(0.0);
+//	cout << car << endl;
+//
+//	vector<vector<CarState>> result;
+//	vector<State*> obstacle;
+//	car.compute_primitive(result, obstacle);
+//
+//	for (auto x : result) {
+//		for (auto y : x) {
+//			cout << y.get_x() << "," << y.get_y() << "," << y.get_theta() << endl;
+//		}
+//		cout << "=============================\n";
+//	}
+//
+//	cin >> temp;
+//	return 0;
+//}
