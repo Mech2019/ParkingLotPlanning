@@ -66,8 +66,10 @@ int A_star::search(static_map *env){
 	int dbg_cnt = 0;
 	// start searching
 	while (!goal_reached && !search_q.empty()){
-		printf("expanded %d\n", ++dbg_cnt);
+		printf("size %d, expanded %d\n", search_q.size(), ++dbg_cnt);
 		auto tmp_node = search_q.top();
+		printf("currently at %lf, %lf\n", tmp_node->get_state()->get_x(), 
+			tmp_node->get_state()->get_y());
 		search_q.pop();
 		// check goal reaching
 		if (isGoal(tmp_node->get_state())){
@@ -88,10 +90,13 @@ int A_star::search(static_map *env){
 			for (int i = 0; i < primitive_result.size(); i++){
 				// only grab the end point of each primitive calculation
 				end_points.push_back(primitive_result[i][primitive_result[i].size() - 1]);
+				// printf("end_points %lf, %lf\n", end_points[i].get_x(), end_points[i].get_y());
 			}
 			// iterate over end_points for pq update
 			for (int i = 0; i < end_points.size(); i++){
-				auto primitive_state = &(end_points[i]);
+				// auto primitive_state = &(end_points[i]);
+				auto primitive_state = new CarState(end_points[i].get_x(), end_points[i].get_y(),
+					end_points[i].get_theta(),end_points[i].get_flag(),end_points[i].get_delta());
 				// if (cost_map.find(primitive_state) == cost_map.end()){
 				// 	cost_map[primitive_state] = cost_map[tmp_state] + step_cost;
 				// }
@@ -108,6 +113,8 @@ int A_star::search(static_map *env){
 					// set parent for backtracking
 					new_search_node->set_parent(tmp_node);
 					new_search_node->set_path(primitive_result[i]);
+					// printf("pushed: %lf, %lf\n", new_search_node->get_state()->get_x(), 
+					// 	new_search_node->get_state()->get_y());
 					// push the node into the search queue
 					search_q.push(new_search_node);
 					// include the child in the parent node
@@ -148,13 +155,18 @@ int A_star::backtrack(SearchNode *node){
 		path.clear();
 		return -1;
 	}
+	this->path.insert(this->path.begin(), this->start_node->get_state());
 	return 0;
 }
 
 bool A_star::isGoal(CarState *cur){
 	for (auto it = goal_list.begin(); it != goal_list.end(); it++){
-		if (calc_state_distance(cur, *it) <= goal_tol)
+		if (calc_state_distance(cur, *it) <= goal_tol){
+			// printf("currently at %lf, %lf\n", (cur)->get_x(), (cur)->get_y());
+			// printf("goal is %lf, %lf\n", (*it)->get_x(), (*it)->get_y());
+			// printf("distance is %lf\n", calc_state_distance(cur, *it));
 			return true;
+		}
 	}
 	return false;
 }
@@ -165,10 +177,11 @@ void A_star::update_goal_list(static_map *env){
 	for (auto it = env_goal_list.begin(); it != env_goal_list.end(); it++){
 		this->goal_list.insert(*it);
 	}
+	printf("total empty goal list size %d\n", goal_list.size());
 }
 
 double A_star::calculate_heuristics(SearchNode *node){
-	double weight = 10.0;
+	double weight = 100000.0;
 	double result = DBL_MAX;
 	for (auto it = this->goal_list.begin(); it != this->goal_list.end(); it++){
 		result = MIN(result, calc_state_distance(node->get_state(), *it) 

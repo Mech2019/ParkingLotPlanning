@@ -40,6 +40,8 @@ movie_time = 0:0.1:(length(traj)-1)*0.1;
 numberOfFrames = length(movie_time);
 delay = 0.1;
 rMAT = @(theta) [cos(theta), -sin(theta); sin(theta), cos(theta)];
+% v = VideoWriter('test.avi','Uncompressed AVI');
+% open(v);
 for i = 1 : numberOfFrames
     % plot map
     for j = 1:total_slot_num
@@ -85,6 +87,7 @@ for i = 1 : numberOfFrames
     drawnow;
     
     thisFrame = getframe(gca);
+%     writeVideo(v, thisFrame);
     im = frame2im(thisFrame);
     [imind,cm] = rgb2ind(im,256);
     if i == 1
@@ -96,3 +99,4 @@ for i = 1 : numberOfFrames
     delete(r);
     delete(c);
 end
+% close(v);

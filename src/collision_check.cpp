@@ -3,9 +3,16 @@
 using namespace std; 
 
 /* the original h, w are declared as static const variable in map.h */
+// bool intersect_point(State *s1, double x, double y) {
+// 	return (x >= s1->get_x() - car_wid/2 && x <= s1->get_x() + car_wid/2 
+// 		&& y <= s1->get_y() + car_len/2 && y >= s1->get_y() - car_len/2);
+// }
 bool intersect_point(State *s1, double x, double y) {
-	return (x >= s1->get_x() - car_wid/2 && x <= s1->get_x() + car_wid/2 
-		&& y <= s1->get_y() + car_len/2 && y >= s1->get_y() - car_len/2);
+    double new_x = x - s1->get_x();
+    double new_y = y - s1->get_y();
+    double proj_x = new_x * cos(s1->get_theta()) + new_y * sin(s1->get_theta());
+    double proj_y = new_x * sin(s1->get_theta()) + new_y * cos(s1->get_theta());
+    return (abs(proj_x) <= car_len/2 && abs(proj_y) <= car_wid/2);
 }
 
 bool onSegment(double x1, double y1, double x2, double y2, double x3, double y3) 
