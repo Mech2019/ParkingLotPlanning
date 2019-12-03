@@ -5,9 +5,6 @@
 
 using namespace std;
 
-// Declear usefull function header
-bool total_collision_check(State *car, vector<State*> & obstacles);
-
 // compute next car state given current car state, speed (constant global)
 // and steering angle after a time duration dt
 CarState CarState::nextCarState(CarState start, double dt) const {
@@ -97,12 +94,12 @@ void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*
 		for (int i = 0; i < SAMPLE_POINTS; i++) {
 			new_car = this->nextCarState(new_car, dt);
 			temp.push_back(new_car);
-			if (total_collision_check(&new_car, obstacles)) {
+			if (total_collision_check(obstacles, &new_car)) {
 				obstacle_free = false;
 				break;
 			}
 		}
-
+		// printf("obstacle free? %d\n", obstacle_free);
 		if (obstacle_free) result.push_back(temp);
 	}
 }

@@ -19,9 +19,6 @@
 #define	MIN(A, B)	((A) < (B) ? (A) : (B))
 #endif
 
-
-#define PI 3.1415927
-
 #if !defined(TORAD)
 #define	TORAD(A)	((A)*PI/180.0)
 #endif
@@ -88,6 +85,6 @@ bool collision_check(CarState *s1, T *s2){
 	}
 	return false;
 }
-// bool collision_check(State *s1, State *s2);
-
+// Declear useful function header
+bool total_collision_check(vector<State*> &obstacles, State *car);
 #endif

@@ -11,24 +11,24 @@
 #include "map.h"
 #include "util.h"
 
-/*
- * This function gives the ability to compare b/t a CarState and a State
- */
-template <class T>
-bool isExactSameState(CarState *carstate, T* state){
-	if (carstate->get_x() != state->get_x() 
-		|| carstate->get_y() != state->get_y()
-		|| carstate->get_theta() != state->get_theta()) {
-		return false;
-	}
-	return true;
-}
+// /*
+//  * This function gives the ability to compare b/t a CarState and a State
+//  */
+// template <class T>
+// bool isExactSameState(CarState *carstate, T* state){
+// 	if (carstate->get_x() != state->get_x() 
+// 		|| carstate->get_y() != state->get_y()
+// 		|| carstate->get_theta() != state->get_theta()) {
+// 		return false;
+// 	}
+// 	return true;
+// }
 
 /*
  * This function calculates distance between a carstate and a state/ carstate
  */
 template <class T>
-double calc_state_distance(CarState *carstate, T* state){
+double calc_state_distance(T *carstate, State* state){
 	double car_x = carstate->get_x();
 	double car_y = carstate->get_y();
 	double state_x = state->get_x();
@@ -46,36 +46,46 @@ private:
 	double f,g,h;
 	SearchNode *parent;
 	std::vector<SearchNode *> child;
+	std::vector<CarState *> path_from_parent; 
 	CarState *self_state;
+
 public:
 	SearchNode(CarState *state);
-	~SearchNode();
+	// ~SearchNode();
 
 	double get_f();
 	double get_g();
 	double get_h();
 	CarState *get_state();
 	SearchNode *get_parent();
+	std::vector<SearchNode *> get_child();
+	std::vector<CarState *> get_path();
 
 	void set_f();
 	void set_g(double g);
 	void set_h(double h);
+	void set_path(std::vector<CarState> primitive_path);
 	void set_parent(SearchNode *p);
 	void insert_child(SearchNode *c);
 };
 
 // min_heap comparator
 struct  SearchNodeHeapComparator {
-	bool operator()(SearchNode *lhs, SearchNode *rhs){
+	bool operator()(SearchNode *lhs, SearchNode *rhs) const{
 		return lhs->get_f() > rhs->get_f();
 	}
 };
 
 struct  SearchNodeComparator {
-	bool operator()(SearchNode *lhs, SearchNode *rhs){
+	bool operator()(SearchNode *lhs, SearchNode *rhs) const{
 		auto lhs_state = lhs->get_state();
 		auto rhs_state = rhs->get_state();
-		isExactSameState(lhs_state, rhs_state);
+			if (lhs_state->get_x() != rhs_state->get_x() 
+			|| lhs_state->get_y() != rhs_state->get_y()
+			|| lhs_state->get_theta() != rhs_state->get_theta()) {
+			return false;
+		}
+		return true;
 	}
 };
 
@@ -105,7 +115,7 @@ public:
 	int backtrack(SearchNode *node);
 	bool isGoal(CarState *cur);
 	void update_goal_list(static_map *env);
-	double calculate_heurisitcs(SearchNode *node);
+	double calculate_heuristics(SearchNode *node);
 	std::vector<CarState *> get_path();
 	void free_search_tree();
 };

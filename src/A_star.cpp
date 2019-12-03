@@ -15,24 +15,31 @@ SearchNode::SearchNode(CarState *state){
 double SearchNode::get_f() {return f;}
 double SearchNode::get_g() {return g;}
 double SearchNode::get_h() {return h;}
-CarState *SearchNode::get_state() {return self_state};
+CarState *SearchNode::get_state() {return self_state;}
 SearchNode *SearchNode::get_parent() {return parent;}
+std::vector<SearchNode *> SearchNode::get_child() {return child;}
+std::vector<CarState *> SearchNode::get_path(){return path_from_parent;}
 
-void SearchNode::set_f(double F) {this->f = this->g + this->h;}
+void SearchNode::set_f() {this->f = this->g + this->h;}
 void SearchNode::set_g(double G) {this->g = G;}
 void SearchNode::set_h(double H) {this->h = H;}
 void SearchNode::set_parent(SearchNode *p) {this->parent = p;}
-void insert_child(SearchNode *c) {this->child.push_back(c);}
+void SearchNode::insert_child(SearchNode *c) {this->child.push_back(c);}
+void SearchNode::set_path(std::vector<CarState> primitive_path){
+	for (auto p:primitive_path){
+		this->path_from_parent.push_back(new CarState(p.get_x(), p.get_y(), p.get_theta(), 0, 0));
+	}
+}
 
 /* Search Class */
-A_star::A_star(CarState *s, , State *vg, double tol){
+A_star::A_star(CarState *st, State *vg, double tol){
 	start = st;
 	this->virtual_goal = vg;
 	goal_tol = tol;
 	this->start_node = new SearchNode(this->start);
 }
 
-int search(static_map *env){
+int A_star::search(static_map *env){
 	// motion primitive step cost
 	static double step_cost = (car_speed * DURATION);
 	// goal flag
@@ -49,20 +56,22 @@ int search(static_map *env){
 	// initialize visited set
 	unordered_set<SearchNode*, SearchNodeHasher, SearchNodeComparator> visited;
 	// initialize a cost map
-	unordered_map<SearchNode*, double, SearchNodeHasher, SearchNodeComparator> cost_map;
-	cost_map[start_node] = start_node->get_g();
+	// unordered_map<SearchNode*, double, SearchNodeHasher, SearchNodeComparator> cost_map;
+	// cost_map[start_node] = start_node->get_g();
 	// push the start node to start the search
 	search_q.push(start_node);
 	// goal for backtrack
 	SearchNode *backtrack_node;
-
+	//
+	int dbg_cnt = 0;
 	// start searching
 	while (!goal_reached && !search_q.empty()){
+		printf("expanded %d\n", ++dbg_cnt);
 		auto tmp_node = search_q.top();
 		search_q.pop();
 		// check goal reaching
 		if (isGoal(tmp_node->get_state())){
-			backtrack_node = tmp->node;
+			backtrack_node = tmp_node;
 			goal_reached = true;
 			break;
 		}
@@ -73,34 +82,37 @@ int search(static_map *env){
 			vector<vector<CarState>> primitive_result;
 			auto tmp_state = tmp_node->get_state();
 			tmp_state->compute_primitive(primitive_result, env->get_occupied_slots());
+			// printf("feasible primitive: %d\n", primitive_result.size());
 			// update successor's g value and build the new node 
 			vector<CarState> end_points;
 			for (int i = 0; i < primitive_result.size(); i++){
-				// only grap the end point of each primitive calculation
+				// only grab the end point of each primitive calculation
 				end_points.push_back(primitive_result[i][primitive_result[i].size() - 1]);
 			}
 			// iterate over end_points for pq update
 			for (int i = 0; i < end_points.size(); i++){
 				auto primitive_state = &(end_points[i]);
-				if (cost_map.find(primitive_state) == cost_map.end()){
-					cost_map[primitive_state] = cost_map[tmp_state] + step_cost;
-				}
-				if (visited.find(primitive_state) == visited.end()){
-					if (cost_map[primitive_state] > cost_map[tmp_state] + step_cost){
-						cost_map[primitive_state] = cost_map[tmp_state] + step_cost;
-						// make a new node and push into the pq
-						SearchNode* new_node;
-						new_node = new SearchNode(primitive_state);
-						new_search_node->set_g(cost_map[tmp_state] + step_cost);
-						new_search_node->set_h(calculate_heuristics(new_search_node));
-						new_search_node->set_f();
-						// set parent for backtracking
-						new_search_node->set_parent(tmp_node);
-						// push the node into the search queue
-						search_q.push(new_search_node);
-						// include the child in the parent node
-						tmp_node->insert_child(new_node);
-					}
+				// if (cost_map.find(primitive_state) == cost_map.end()){
+				// 	cost_map[primitive_state] = cost_map[tmp_state] + step_cost;
+				// }
+				SearchNode* new_search_node;
+				new_search_node = new SearchNode(primitive_state);
+				if (visited.find(new_search_node) == visited.end()){
+					// if (cost_map[primitive_state] > cost_map[tmp_state] + step_cost){
+					// 	cost_map[primitive_state] = cost_map[tmp_state] + step_cost;
+					// make a new node and push into the pq
+					// new_search_node->set_g(cost_map[tmp_state] + step_cost);
+					new_search_node->set_g(tmp_node->get_g() + step_cost);
+					new_search_node->set_h(calculate_heuristics(new_search_node));
+					new_search_node->set_f();
+					// set parent for backtracking
+					new_search_node->set_parent(tmp_node);
+					new_search_node->set_path(primitive_result[i]);
+					// push the node into the search queue
+					search_q.push(new_search_node);
+					// include the child in the parent node
+					tmp_node->insert_child(new_search_node);
+					// }
 				}
 			}
 		}
@@ -117,15 +129,18 @@ int search(static_map *env){
 		free_search_tree();
 		return -1;
 	}
-	// recycle the search tree
-	free_search_tree();
+
 	return 0;
 }
 
 int A_star::backtrack(SearchNode *node){
 	auto tmp = node;
-	while (tmp && tmp != this->start_node){
-		this->path.insert(this->path.begin(), tmp->get_state());
+	SearchNode *pretmp;
+	while (tmp && tmp!=this->start_node){
+		auto path_from_parent = tmp->get_path();
+		// printf("num in path %d\n", path_from_parent.size());
+		this->path.insert(this->path.begin(), path_from_parent.begin(), path_from_parent.end());
+		// pretmp = tmp;
 		tmp = tmp->get_parent();
 	}
 	if (tmp != this->start_node){
@@ -144,6 +159,7 @@ bool A_star::isGoal(CarState *cur){
 	return false;
 }
 
+// need to call this before the search!!!
 void A_star::update_goal_list(static_map *env){
 	auto env_goal_list = env->get_goal_list();
 	for (auto it = env_goal_list.begin(); it != env_goal_list.end(); it++){
@@ -152,11 +168,11 @@ void A_star::update_goal_list(static_map *env){
 }
 
 double A_star::calculate_heuristics(SearchNode *node){
+	double weight = 10.0;
 	double result = DBL_MAX;
-	auto env_goal_list = env->get_goal_list();
-	for (auto it = env_goal_list.begin(); it != env_goal_list.end(); it++){
+	for (auto it = this->goal_list.begin(); it != this->goal_list.end(); it++){
 		result = MIN(result, calc_state_distance(node->get_state(), *it) 
-								+ calc_state_distance(*it, virtual_goal));
+								+ weight * calc_state_distance(*it, virtual_goal));
 	}
 	return result;
 }
@@ -165,5 +181,15 @@ std::vector<CarState *> A_star::get_path() {return this->path;}
 
 void A_star::free_search_tree(){
 	// use BFS to free the entire search tree
+	queue<SearchNode*> q;
+	q.push(this->start_node);
+	while (!q.empty()){
+		auto tmp = q.front();
+		q.pop();
+		for (auto c : tmp->get_child()){
+			q.push(c);
+		}
+		delete tmp;
+	}
 }
 
