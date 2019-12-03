@@ -95,7 +95,7 @@ private:
 	CarState *start;
 	CarState *goal;
 	SearchNode *start_node;
-	State* shop_location;
+	State* virtual_goal;
 	std::vector<CarState *> path;
 	std::unordered_set<State*, StateHasher, StateComparator> goal_list;
 public:

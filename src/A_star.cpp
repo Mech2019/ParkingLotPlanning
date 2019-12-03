@@ -154,7 +154,15 @@ double A_star::calculate_heuristics(SearchNode *node){
 	double result = DBL_MAX;
 	auto env_goal_list = env->get_goal_list();
 	for (auto it = env_goal_list.begin(); it != env_goal_list.end(); it++){
-		result = MIN(result, calc_state_distance(node->get_state(), *it));
+		result = MIN(result, calc_state_distance(node->get_state(), *it) 
+								+ calc_state_distance(*it, virtual_goal));
 	}
 	return result;
 }
+
+std::vector<CarState *> A_star::get_path() {return this->path;}
+
+void A_star::free_search_tree(){
+	// use BFS to free the entire search tree
+}
+
