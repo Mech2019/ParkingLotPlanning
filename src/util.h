@@ -42,6 +42,12 @@ static const double car_len = 4.5;
 static const double car_speed = 5.0; // in m/s
 static const double wheel_base = 2.7; // distance between front and back wheel axis
 
+// motion primitive variables
+const double DURATION = 1.0; // time to drive
+const int SAMPLE_POINTS = 20; // sampled points per each primitive
+const double delta_MAX = TORAD(30); // max steering angle to right
+const double delta_MIN = TORAD(-30); // max steering angle to left
+
 /* helper function for collision check */
 bool intersect_point(State *s1, double x, double y);
 bool onSegment(double x1, double y1, double x2, double y2, double x3, double y3);

@@ -51,7 +51,8 @@ public:
 
 /* Added comparator and hasher for the State class for future container use */
 struct StateComparator{
-	bool operator()(State *lhs, State *rhs) const{
+	template <class T>
+	bool operator()(T *lhs, T *rhs) const{
 		if (lhs->get_x() != rhs->get_x() || lhs->get_y() != rhs->get_y()){
 			// printf("im here\n");
 			// || this->theta != rhs->get_theta()) 
@@ -63,7 +64,8 @@ struct StateComparator{
 };
 
 struct StateHasher{
-	size_t operator()(State *state) const{
+	template <class T>
+	size_t operator()(T *state) const{
 		return std::hash<double>{}(state->get_x());
 	}
 };

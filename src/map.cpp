@@ -9,8 +9,13 @@ static_map::static_map(double wid, double len, vector<vector<double>> input){
 	this->slot_num = input.size();
 	for (int i = 0; i < input.size(); i++){
 		// slots contain all slots with true information
+		// slots.push_back(shared_ptr<State>(new State(input[i][0], input[i][1], input[i][2], input[i][3])));
 		slots.push_back(new State(input[i][0], input[i][1], input[i][2], input[i][3]));
+		// update occupied slot list
+		if (input[i][3])
+			occupied_slots.push_back(slots[i]);
 		// goal list initially contains slots with assumed information
+		// goal_list.insert(shared_ptr<State>(new State(input[i][0], input[i][1], input[i][2], false)));
 		goal_list.insert(new State(input[i][0], input[i][1], input[i][2], false));
 	}
 	unseen_slots = slots;
@@ -18,6 +23,9 @@ static_map::static_map(double wid, double len, vector<vector<double>> input){
 static_map::~static_map(){
 	for (int i = 0; i < slots.size(); i++){
 		delete slots[i];
+	}
+	for (auto it = goal_list.begin(); it != goal_list.end(); it++){
+		delete(*it);
 	}
 }
 int static_map::get_slot_num(){
@@ -31,6 +39,9 @@ double static_map::get_map_length(){
 }
 vector<State*> static_map::get_slots(){
 	return this->slots;
+}
+vector<State*> static_map::get_occupied_slots(){
+	return this->occupied_slots;
 }
 unordered_set<State*, StateHasher, StateComparator> static_map::get_goal_list(){
 	return this->goal_list;

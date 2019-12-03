@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <memory>
 
 #include "state.h"
 #include "util.h"
@@ -32,7 +33,9 @@ private:
 	double map_width;
 	double map_length;
 	int slot_num;
+	// std::vector<std::shared_Ptr<State*>> slots;
 	std::vector<State*> slots;
+	std::vector<State*> occupied_slots;
 	std::unordered_set<State*, StateHasher, StateComparator> goal_list;
 	std::vector<State*> unseen_slots;
 public:
@@ -43,6 +46,7 @@ public:
 	double get_map_width();
 	double get_map_length();
 	std::vector<State*> get_slots();
+	std::vector<State*> get_occupied_slots();
 	std::unordered_set<State*, StateHasher, StateComparator> get_goal_list();
 	void update_goal_list(CarState *ego);
 };
