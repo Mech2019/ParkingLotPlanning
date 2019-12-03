@@ -9,6 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <unordered_map>
+#include <math.h>
 
 #include "state.h"
 #include "map.h"
@@ -40,5 +41,6 @@ public:
   void extend(CarState& rand_state);
   void nearest_neighbor(CarState& rand_state, CarState& nearest);
   void print_tree();
+  double calculate_distance(CarState& from_state, CarState& to_state);
 };
 

@@ -6,6 +6,7 @@ RRT_Tree::RRT_Tree(CarState start, CarState goal) {
   goal_pos = goal;
   node_map[0] = start_pos;
   graph[0] = {};
+  size = 1;
 }
 
 void RRT_Tree::sample_node(int id, CarState& rand_state) {
@@ -40,29 +41,56 @@ void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
   int selected_n = rand() % n;
 
   rand_state = result[selected_m][selected_n];
-  cout <<"Sample from primitives : " << rand_state << endl;
+  cout <<"Sample from primitives result: " << rand_state << endl;
 
 }
 
 void RRT_Tree::extend(CarState& rand_state) {
-  cout << "random: " << rand_state << endl;
+
+  CarState nearest = CarState();
+  nearest_neighbor(rand_state, nearest);
+
+  cout << "in extend, found nearest " << nearest << endl;
+
+}
+
+double RRT_Tree::calculate_distance(CarState& from_state, CarState& to_state){
+
+  double dist = 0;
+  double x1 = from_state.get_x();
+  double y1 = from_state.get_y();
+  double x2 = to_state.get_x();
+  double y2 = to_state.get_y();
+  dist = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+  return dist;
 }
 
 void RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
-  cout << "nearest: " << nearest << endl;
-  cout << "rand: " << rand_state << endl;
 
+  double nearest_dist = INT_MAX;
+  double curr_dist;
+  int nearest_id;
+
+  for (int i =0; i<size; i++){
+    cout << "node: " << node_map[i] << endl;
+//    calculate_distance
+    curr_dist = calculate_distance(node_map[i], rand_state);
+    if (curr_dist < nearest_dist){
+      nearest_dist = curr_dist;
+      nearest_id = i;
+    }
+  }
+
+  cout << "neareset node id " << nearest_id << ", " << nearest_dist << endl;
+  nearest = node_map[nearest_id];
 }
 
 void RRT_Tree::add_node(int id) {
 
-  CarState nearest = CarState();
   CarState rand_state = CarState();
-
   sample_node(id, rand_state);
-
   extend(rand_state);
-  nearest_neighbor(rand_state, nearest);
+
 
 
 }
