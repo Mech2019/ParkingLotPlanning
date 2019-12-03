@@ -7,6 +7,7 @@ RRT_Tree::RRT_Tree(CarState start, CarState goal) {
   node_map[0] = start_pos;
   graph[0] = {};
   size = 1;
+  min_dist = INT_MAX;
 }
 
 void RRT_Tree::sample_node(int id, CarState& rand_state) {
@@ -22,7 +23,7 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
   rand_state.set_y(rand_y);
   rand_state.set_theta(rand_theta);
 
-  cout << "Sample from random: " << rand_state << endl;
+//  cout << "Sample from random: " << rand_state << endl;
 }
 
 void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
@@ -34,25 +35,30 @@ void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
 
   int m = result.size();
   int n = result[0].size();
-  cout << "sample size = " << m << ", " << n << endl;
+//  cout << "sample size = " << m << ", " << n << endl;
 
   srand(id); // fixed for debug reason
   int selected_m = rand() % m;
   int selected_n = rand() % n;
 
   rand_state = result[selected_m][selected_n];
-  cout <<"Sample from primitives result: " << rand_state << endl;
+//  cout <<"Sample from primitives result: " << rand_state << endl;
 
 }
 
-void RRT_Tree::extend(CarState& rand_state) {
+void RRT_Tree::get_new_state_from_nearest(CarState& rand_state, CarState& nearest,
+                                CarState& new_state){
+  new_state.set_x(nearest.get_x() +
+  EPSILON_DIST * (rand_state.get_x() - nearest.get_x()));
 
-  CarState nearest = CarState();
-  nearest_neighbor(rand_state, nearest);
+  new_state.set_y(nearest.get_y() +
+  EPSILON_DIST * (rand_state.get_y() - nearest.get_y()));
 
-  cout << "in extend, found nearest " << nearest << endl;
-
+  new_state.set_theta(nearest.get_theta() +
+  EPSILON_THETA * (rand_state.get_theta() - nearest.get_theta()));
+//  cout << "new :" << new_state << endl;
 }
+
 
 double RRT_Tree::calculate_distance(CarState& from_state, CarState& to_state){
 
@@ -65,14 +71,14 @@ double RRT_Tree::calculate_distance(CarState& from_state, CarState& to_state){
   return dist;
 }
 
-void RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
+int RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
 
   double nearest_dist = INT_MAX;
   double curr_dist;
   int nearest_id;
 
   for (int i =0; i<size; i++){
-    cout << "node: " << node_map[i] << endl;
+//    cout << "node: " << node_map[i] << endl;
 //    calculate_distance
     curr_dist = calculate_distance(node_map[i], rand_state);
     if (curr_dist < nearest_dist){
@@ -81,9 +87,34 @@ void RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
     }
   }
 
-  cout << "neareset node id " << nearest_id << ", " << nearest_dist << endl;
+//  cout << "neareset node id " << nearest_id << ", " << nearest_dist << endl;
   nearest = node_map[nearest_id];
+  return nearest_id;
 }
+
+
+void RRT_Tree::extend(CarState& rand_state) {
+
+  CarState nearest = CarState();
+  CarState new_state = CarState();
+
+  int nearest_id = nearest_neighbor(rand_state, nearest);
+//  cout << "in extend, found nearest " << nearest << endl;
+
+  get_new_state_from_nearest(rand_state, nearest, new_state);
+  int new_id = size;
+  node_map[new_id] = new_state;
+  graph[nearest_id].push_back(new_id);
+  graph[new_id] = {};
+  size++;
+
+  // check if reached
+  if (check_if_reached(new_state, goal_pos)){
+    cout << "reached!" << endl;
+  }
+
+}
+
 
 void RRT_Tree::add_node(int id) {
 
@@ -130,6 +161,25 @@ void RRT_Tree::print_tree() {
   cout << "------------------------------------------------------" << endl;
 }
 
+
+bool RRT_Tree::check_if_reached(CarState& from, CarState& goal){
+  double curr_dist = calculate_distance(from, goal);
+  if (curr_dist < min_dist){
+    min_dist = curr_dist;
+  }
+  cout << "min dist = " << min_dist << endl;
+  if (curr_dist < GOAL_THRESHOLD){
+    return true;
+  }
+  return false;
+}
+
+
+
+
+
+
+
 void local_planner(CarState &start, CarState &goal,
     vector<CarState>& plan){
 
@@ -138,10 +188,15 @@ void local_planner(CarState &start, CarState &goal,
   cout << "goal " << goal << endl;
 
   RRT_Tree tree(start, goal);
+  for (int i = 1; i<1000; i++){
+    tree.add_node(i);
+  }
 
-//  tree.add_node(1);
-  tree.add_node_from_primitives(1, start);
-  tree.print_tree();
+
+//  tree.add_node_from_primitives(1, start);
+//  tree.add_node_from_primitives(2, start);
+
+//  tree.print_tree();
 
 
 
