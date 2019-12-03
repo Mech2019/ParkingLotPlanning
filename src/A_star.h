@@ -99,7 +99,7 @@ private:
 	std::vector<CarState *> path;
 	std::unordered_set<State*, StateHasher, StateComparator> goal_list;
 public:
-	A_star(CarState *st, double tol);
+	A_star(CarState *st, State *vg, double tol);
 	// ~A_star();
 	int search(static_map *env);
 	int backtrack(SearchNode *node);

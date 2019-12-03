@@ -25,8 +25,9 @@ void SearchNode::set_parent(SearchNode *p) {this->parent = p;}
 void insert_child(SearchNode *c) {this->child.push_back(c);}
 
 /* Search Class */
-A_star::A_star(CarState *s, double tol){
+A_star::A_star(CarState *s, , State *vg, double tol){
 	start = st;
+	this->virtual_goal = vg;
 	goal_tol = tol;
 	this->start_node = new SearchNode(this->start);
 }
