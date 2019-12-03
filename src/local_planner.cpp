@@ -50,7 +50,7 @@ void RRT_Tree::extend(CarState& rand_state) {
 
 void RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
   cout << "nearest: " << nearest << endl;
-
+  cout << "rand: " << rand_state << endl;
 
 }
 
