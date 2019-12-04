@@ -86,6 +86,16 @@ bool collision_check(State *s1, T *s2){
 			}
 		}
 	}
+
+	// out of bound check
+	// if (s1->get_x() < 0 || s1->get_x() > map_wid)
+	// 	return true;
+	if (s2->get_x() < 0 || s2->get_x() > map_wid)
+		return true;
+	// if (s1->get_y() < 0 || s1->get_y() > map_len)
+	// 	return true;
+	if (s2->get_y() < 0 || s2->get_y() > map_len)
+		return true;
 	return false;
 }
 

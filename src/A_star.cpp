@@ -34,6 +34,16 @@ void SearchNode::free_self_state(){
 	delete this->self_state;
 }
 
+
+bool SearchNode::cmp(CarState *rhs, double tol){
+	double dx = this->get_state()->get_x() - rhs->get_x();
+	double dy = this->get_state()->get_y() - rhs->get_y();
+	double dtheta = this->get_state()->get_theta() - rhs->get_theta();
+
+	if (sqrt(dx*dx+dy*dy+dtheta*dtheta) <= tol)
+		return true;
+	return false;
+}
 /* Search Class */
 A_star::A_star(CarState *st, State *vg, double tol){
 	start = st;
@@ -41,7 +51,9 @@ A_star::A_star(CarState *st, State *vg, double tol){
 	goal_tol = tol;
 	this->start_node = new SearchNode(this->start);
 }
-
+void A_star::set_start(CarState *st){
+	this->start = st;
+}
 int A_star::search(static_map *env){
 	// motion primitive step cost
 	static double step_cost = (car_speed * DURATION);
@@ -63,23 +75,28 @@ int A_star::search(static_map *env){
 	// cost_map[start_node] = start_node->get_g();
 	// push the start node to start the search
 	search_q.push(start_node);
-	// goal for backtrack
-	SearchNode *backtrack_node;
+	// // goal for backtrack
+	// SearchNode *backtrack_node;
 	//
-	int dbg_cnt = 0;
+	int expansion_cnt = 0;
 	// start searching
-	while (!goal_reached && !search_q.empty()){
+	while (!goal_reached && !search_q.empty() && expansion_cnt < max_expansion){
 		auto tmp_node = search_q.top();
 		search_q.pop();
+		// backtrack_node = tmp_node;
 		// check goal reaching
 		if (isGoal(tmp_node->get_state())){
-			backtrack_node = tmp_node;
+			// backtrack_node = tmp_node;
+			this->goal = tmp_node;
+			 printf("target is at %lf, %lf\n", tmp_node->get_state()->get_x(), 
+				tmp_node->get_state()->get_y());
 			goal_reached = true;
 			break;
 		}
 		// normal search routine
 		if (visited.find(tmp_node) == visited.end()){
-			// printf("size %d, expanded %d\n", search_q.size(), ++dbg_cnt);
+			expansion_cnt += 1;
+			// printf("size %d, expanded %d\n", search_q.size(), expansion_cnt);
 			// printf("currently at %lf, %lf, with f_value %lf\n", tmp_node->get_state()->get_x(), 
 			// 	tmp_node->get_state()->get_y(), tmp_node->get_f());
 			visited.insert(tmp_node);
@@ -130,13 +147,16 @@ int A_star::search(static_map *env){
 		}
 	}
 	// no goal found
-	if (!goal_reached){
+	if (!goal_reached && expansion_cnt < max_expansion){
 		printf("No goal found.\n");
 		free_search_tree();
 		return -1;
 	}
+	if (expansion_cnt == max_expansion){
+		this->goal = search_q.top();
+	}
 	// back tracking
-	if (backtrack(backtrack_node->get_parent()) != 0){
+	if (backtrack(this->goal->get_parent()) != 0){
 		printf("Backtrack failed\n");
 		free_search_tree();
 		return -1;
@@ -146,13 +166,15 @@ int A_star::search(static_map *env){
 }
 
 int A_star::backtrack(SearchNode *node){
-	path.clear();
+	this->path.clear();
 	auto tmp = node;
-	SearchNode *pretmp;
 	while (tmp && tmp!=this->start_node){
 		auto path_from_parent = tmp->get_path();
+		// only preserve the first waypoint
+		this->path.clear();
 		// printf("num in path %d\n", path_from_parent.size());
-		this->path.insert(this->path.begin(), path_from_parent.begin(), path_from_parent.end());
+		this->path.insert(this->path.begin(), path_from_parent.begin(), 
+			path_from_parent.end());
 		// pretmp = tmp;
 		tmp = tmp->get_parent();
 	}
@@ -161,7 +183,8 @@ int A_star::backtrack(SearchNode *node){
 		path.clear();
 		return -1;
 	}
-	this->path.insert(this->path.begin(), this->start_node->get_state());
+	// printf("path size is %d\n", this->path.size());
+	// this->path.insert(this->path.begin(), this->start_node->get_state());
 	return 0;
 }
 
@@ -180,6 +203,7 @@ bool A_star::isGoal(CarState *cur){
 // need to call this before the search!!!
 void A_star::update_goal_list(static_map *env){
 	auto env_goal_list = env->get_goal_list();
+	this->goal_list.clear();
 	for (auto it = env_goal_list.begin(); it != env_goal_list.end(); it++){
 		this->goal_list.insert(*it);
 	}
@@ -187,7 +211,7 @@ void A_star::update_goal_list(static_map *env){
 }
 
 double A_star::calculate_heuristics(SearchNode *node){
-	double goal_virtual_w = 50.0;
+	double goal_virtual_w = 1000.0;
 	double result = DBL_MAX;
 	for (auto it = this->goal_list.begin(); it != this->goal_list.end(); it++){
 		double theta = (node->get_state()->get_theta()); 
@@ -199,6 +223,8 @@ double A_star::calculate_heuristics(SearchNode *node){
 }
 
 std::vector<CarState *> A_star::get_path() {return this->path;}
+
+SearchNode *A_star::get_goal(){return this->goal;}
 
 void A_star::free_search_tree(){
 	// use BFS to free the entire search tree

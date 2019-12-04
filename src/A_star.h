@@ -11,6 +11,7 @@
 #include "map.h"
 #include "util.h"
 
+static const int max_expansion = 75;
 // /*
 //  * This function gives the ability to compare b/t a CarState and a State
 //  */
@@ -69,6 +70,8 @@ public:
 	void insert_child(SearchNode *c);
 
 	void free_self_state();
+
+	bool cmp(CarState *rhs, double tol);
 };
 
 // min_heap comparator
@@ -82,8 +85,8 @@ struct  SearchNodeComparator {
 	bool operator()(SearchNode *lhs, SearchNode *rhs) const{
 		auto lhs_state = lhs->get_state();
 		auto rhs_state = rhs->get_state();
-			if (lhs_state->get_x() != rhs_state->get_x() 
-			|| lhs_state->get_y() != rhs_state->get_y()) {
+		if (lhs_state->get_x() != rhs_state->get_x() 
+		|| lhs_state->get_y() != rhs_state->get_y()) {
 			return false;
 		}
 		return true;
@@ -104,20 +107,21 @@ class A_star{
 private:
 	double goal_tol;
 	CarState *start;
-	CarState *goal;
+	SearchNode *goal;
 	SearchNode *start_node;
 	State* virtual_goal;
 	std::vector<CarState *> path;
 	std::unordered_set<State*, StateHasher, StateComparator> goal_list;
 public:
 	A_star(CarState *st, State *vg, double tol);
-	// ~A_star();
+	void set_start(CarState *st);
 	int search(static_map *env);
 	int backtrack(SearchNode *node);
 	bool isGoal(CarState *cur);
 	void update_goal_list(static_map *env);
 	double calculate_heuristics(SearchNode *node);
 	std::vector<CarState *> get_path();
+	SearchNode *get_goal();
 	void free_search_tree();
 };
 // vector<SearchNode *> A_star(CarState *start, static_map *env);

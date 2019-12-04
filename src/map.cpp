@@ -13,7 +13,7 @@ static_map::static_map(double wid, double len, vector<vector<double>> input){
 		slots.push_back(new State(input[i][0], input[i][1], input[i][2], input[i][3]));
 		// update occupied slot list
 		if (input[i][3])
-			occupied_slots.push_back(slots[i]);
+			occupied_slots.push_back(new State(input[i][0], input[i][1], input[i][2], input[i][3]));
 		// goal list initially contains slots with assumed information
 		// goal_list.insert(shared_ptr<State>(new State(input[i][0], input[i][1], input[i][2], false)));
 		goal_list.insert(new State(input[i][0], input[i][1], input[i][2], false));
@@ -127,11 +127,12 @@ void static_map::update_goal_list(CarState *ego){
 			unseen_slots.erase(it);
 			// if this slot is not empty, erase it from the goal list
 			if ((slot->get_flag())){
-				printf("state to erase: \n");
-				cout << slot << endl;
+				// printf("state to erase: \n");
+				// cout << slot << endl;
 				auto goal_it = goal_list.find(slot);
 				if (goal_it != goal_list.end()){
 					// printf("found the slot in the goal list\n");
+					delete *goal_it;
 					goal_list.erase(goal_it);	
 				}
 			}
