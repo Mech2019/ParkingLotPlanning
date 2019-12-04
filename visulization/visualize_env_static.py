@@ -21,7 +21,7 @@ map_file = "map.csv"
 
 # for test reason
 # car_traj_input = [10, 26, 0]
-plan_file = "plan_sample.txt"
+plan_file = "../src/local_result.txt"
 car_traj_input = np.loadtxt(plan_file, delimiter=',', skiprows=0)
 
 print(car_traj_input)
@@ -31,8 +31,6 @@ traj_num = car_traj_input.shape[0]
 car_pos_x = car_traj_input[:, 0]
 car_pos_y = car_traj_input[:, 1]
 point_ani, = plt.plot(car_pos_x[0], car_pos_y[0], 'r')
-
-
 
 def read_map_data(map_file):
     map_data = np.loadtxt(map_file, delimiter=',', skiprows=1)
