@@ -252,7 +252,6 @@ void local_planner(CarState &start, CarState &goal,
 
 //  tree.add_node_from_primitives(1, start);
 //  tree.add_node_from_primitives(2, start);
-
 //  tree.print_tree();
 
 
