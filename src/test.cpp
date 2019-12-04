@@ -71,7 +71,7 @@ int main(){
 	/* test A_star */
 	CarState *ego_vehicle = new CarState(8.5, 2.75, PI/2, 1, 0.0);
 	State *virtual_goal = new State(50.0, 30.0, 0.0, 0.0);
-	A_star *a_star = new A_star(ego_vehicle, virtual_goal, 2.0);
+	A_star *a_star = new A_star(ego_vehicle, virtual_goal, 1.0);
 	vector<CarState *> path;
 
 	env->update_goal_list(ego_vehicle);

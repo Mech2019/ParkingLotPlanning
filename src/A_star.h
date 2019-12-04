@@ -67,6 +67,8 @@ public:
 	void set_path(std::vector<CarState> primitive_path);
 	void set_parent(SearchNode *p);
 	void insert_child(SearchNode *c);
+
+	void free_self_state();
 };
 
 // min_heap comparator

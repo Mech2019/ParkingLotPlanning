@@ -30,6 +30,9 @@ void SearchNode::set_path(std::vector<CarState> primitive_path){
 		this->path_from_parent.push_back(new CarState(p.get_x(), p.get_y(), p.get_theta(), 0, 0));
 	}
 }
+void SearchNode::free_self_state(){
+	delete this->self_state;
+}
 
 /* Search Class */
 A_star::A_star(CarState *st, State *vg, double tol){
@@ -84,6 +87,7 @@ int A_star::search(static_map *env){
 			vector<vector<CarState>> primitive_result;
 			auto tmp_state = tmp_node->get_state();
 			tmp_state->compute_primitive(primitive_result, env->get_occupied_slots());
+			// tmp_state->compute_primitive(primitive_result, env->get_slots());
 			// printf("feasible primitive: %d\n", primitive_result.size());
 			// update successor's g value and build the new node 
 			vector<CarState> end_points;
@@ -181,11 +185,15 @@ void A_star::update_goal_list(static_map *env){
 }
 
 double A_star::calculate_heuristics(SearchNode *node){
-	double weight = 100000.0;
+	double goal_virtual_w = 1.0;
+	double angle_w = 1.0;
 	double result = DBL_MAX;
 	for (auto it = this->goal_list.begin(); it != this->goal_list.end(); it++){
-		result = MIN(result, calc_state_distance(node->get_state(), *it) 
-								+ weight * calc_state_distance(*it, virtual_goal));
+		double theta = (node->get_state()->get_theta()); 
+		double c = calc_state_distance(node->get_state(), *it) +
+					 goal_virtual_w * calc_state_distance(*it, virtual_goal) + 
+					 angle_w * theta * theta;
+		result = MIN(result, c);
 	}
 	return result;
 }
@@ -202,6 +210,7 @@ void A_star::free_search_tree(){
 		for (auto c : tmp->get_child()){
 			q.push(c);
 		}
+		tmp->free_self_state();
 		delete tmp;
 	}
 }
