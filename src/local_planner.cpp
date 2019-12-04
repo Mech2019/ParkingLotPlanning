@@ -109,7 +109,7 @@ int RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
 }
 
 
-void RRT_Tree::extend(CarState& rand_state) {
+void RRT_Tree::extend(CarState& rand_state, static_map *env) {
 
   CarState nearest = CarState();
   CarState new_state = CarState();
@@ -118,40 +118,50 @@ void RRT_Tree::extend(CarState& rand_state) {
 //  cout << "in extend, found nearest " << nearest << endl;
 
   get_new_state_from_nearest(rand_state, nearest, new_state);
-  int new_id = size;
-  node_map[new_id] = new_state;
-  graph[nearest_id].push_back(new_id);
-  graph[new_id] = {};
-  parent_node[new_id] = nearest_id;
-  size++;
 
-  // check if reached
-  if (check_if_reached(new_state, goal_pos)){
-    reached = 1;
-    cout << "reached!" << endl;
+  bool collision_check_res = local_collision_check(new_state, env);
+//  cout << "collision check: " << collision_check_res << endl;
+
+  if (1){
+
+    // if no collision, add node
+    int new_id = size;
+    node_map[new_id] = new_state;
+    graph[nearest_id].push_back(new_id);
+    graph[new_id] = {};
+    parent_node[new_id] = nearest_id;
+    size++;
+
+    // check if reached
+    if (check_if_reached(new_state, goal_pos)){
+      reached = 1;
+      cout << "reached!" << endl;
+    }
   }
+
+
 
 }
 
 
-void RRT_Tree::add_node(int id) {
+void RRT_Tree::add_node(int id, static_map *env) {
 
   CarState rand_state = CarState();
   sample_node(id, rand_state);
-  extend(rand_state);
+  extend(rand_state, env);
 
 
 
 }
 
-void RRT_Tree::add_node_from_primitives(int id, CarState& curr_state) {
+void RRT_Tree::add_node_from_primitives(int id, CarState& curr_state, static_map *env) {
 
   CarState nearest = CarState();
   CarState rand_state = CarState();
 
   sample_node_from_primitives(id, rand_state, curr_state);
 
-  extend(rand_state);
+  extend(rand_state, env);
   nearest_neighbor(rand_state, nearest);
 
   sample_node_from_primitives(id, rand_state, curr_state);
@@ -184,8 +194,8 @@ bool RRT_Tree::check_if_reached(CarState& from, CarState& goal){
   double curr_dist = calculate_distance(from, goal);
   if (curr_dist < min_dist){
     min_dist = curr_dist;
+    cout << "min dist = " << min_dist << endl;
   }
-  cout << "min dist = " << min_dist << endl;
   if (curr_dist < GOAL_THRESHOLD){
     return true;
   }
@@ -217,9 +227,9 @@ void RRT_Tree::reconstruct_path(int last_node_id, vector<int> &path_id) {
 
 }
 
-bool RRT_Tree::local_collision_check(CarState &curr_state, static_map *env) {
+bool local_collision_check(CarState &curr_state, static_map *env) {
   env->update_goal_list(&curr_state);
-  std::vector<State*> occupied_slots =  env->get_occupied_slots();
+  vector<State*> occupied_slots =  env->get_occupied_slots();
   int obs_size =occupied_slots.size();
 //  cout << "occupied_slots number: " << n << endl;
 
@@ -243,11 +253,14 @@ bool RRT_Tree::local_collision_check(CarState &curr_state, static_map *env) {
 
 
 void local_planner(CarState &start, CarState &goal,
-    vector<CarState>& plan){
+    vector<CarState>& plan, static_map *env){
 
   cout << "start local planner:" << endl;
   cout << "start " << start << endl;
   cout << "goal " << goal << endl;
+
+  local_collision_check(start, env);
+  local_collision_check(goal, env);
 
   // open a file in write mode.
   ofstream outfile;
@@ -258,8 +271,8 @@ void local_planner(CarState &start, CarState &goal,
   vector<int> path_id;
 
   RRT_Tree tree(start, goal);
-  for (int i = 1; i<1000; i++){
-    tree.add_node(i);
+  for (int i = 1; i<100000; i++){
+    tree.add_node(i, env);
     if (tree.reached){
       tree.reconstruct_path(i, path_id);
       break;
@@ -273,8 +286,14 @@ void local_planner(CarState &start, CarState &goal,
 
 //  tree.add_node_from_primitives(1, start);
 //  tree.add_node_from_primitives(2, start);
-//  tree.print_tree();
+  tree.print_tree();
 
+  cout << "node map size = " << tree.node_map.size() << endl;
+
+//  for (int i=0; i < tree.node_map.size(); i++){
+//    outfile << tree.node_map[i] << endl;
+//    cout << tree.node_map[i] << endl;
+//  }
 
   outfile << goal << endl;
   outfile.close();
