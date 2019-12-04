@@ -217,6 +217,27 @@ void RRT_Tree::reconstruct_path(int last_node_id, vector<int> &path_id) {
 
 }
 
+bool RRT_Tree::local_collision_check(CarState &curr_state, static_map *env) {
+  env->update_goal_list(&curr_state);
+  std::vector<State*> occupied_slots =  env->get_occupied_slots();
+  int obs_size =occupied_slots.size();
+//  cout << "occupied_slots number: " << n << endl;
+
+  for (int i=0; i<obs_size; i++){
+    State temp = State();
+
+    temp.set_x(curr_state.get_x());
+    temp.set_y(curr_state.get_y());
+    temp.set_theta(curr_state.get_theta());
+
+    if (collision_check(&temp, occupied_slots[i])) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 
 
 

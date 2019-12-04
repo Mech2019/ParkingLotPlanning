@@ -56,7 +56,7 @@ public:
   double calculate_distance(CarState& from_state, CarState& to_state);
   bool check_if_reached(CarState& from, CarState& goal);
   void reconstruct_path(int last_node_id, vector<int> &path_id);
-  void local_collision_check(CarState& curr_state, static_map *env);
+  bool local_collision_check(CarState& curr_state, static_map *env);
 };
 
 
