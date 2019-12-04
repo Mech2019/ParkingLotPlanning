@@ -83,8 +83,7 @@ struct  SearchNodeComparator {
 		auto lhs_state = lhs->get_state();
 		auto rhs_state = rhs->get_state();
 			if (lhs_state->get_x() != rhs_state->get_x() 
-			|| lhs_state->get_y() != rhs_state->get_y()
-			|| lhs_state->get_theta() != rhs_state->get_theta()) {
+			|| lhs_state->get_y() != rhs_state->get_y()) {
 			return false;
 		}
 		return true;

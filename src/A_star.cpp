@@ -69,10 +69,7 @@ int A_star::search(static_map *env){
 	int dbg_cnt = 0;
 	// start searching
 	while (!goal_reached && !search_q.empty()){
-		printf("size %d, expanded %d\n", search_q.size(), ++dbg_cnt);
 		auto tmp_node = search_q.top();
-		printf("currently at %lf, %lf\n", tmp_node->get_state()->get_x(), 
-			tmp_node->get_state()->get_y());
 		search_q.pop();
 		// check goal reaching
 		if (isGoal(tmp_node->get_state())){
@@ -82,6 +79,9 @@ int A_star::search(static_map *env){
 		}
 		// normal search routine
 		if (visited.find(tmp_node) == visited.end()){
+			// printf("size %d, expanded %d\n", search_q.size(), ++dbg_cnt);
+			// printf("currently at %lf, %lf, with f_value %lf\n", tmp_node->get_state()->get_x(), 
+			// 	tmp_node->get_state()->get_y(), tmp_node->get_f());
 			visited.insert(tmp_node);
 			// compute successor by using primitives
 			vector<vector<CarState>> primitive_result;
@@ -111,7 +111,8 @@ int A_star::search(static_map *env){
 					// 	cost_map[primitive_state] = cost_map[tmp_state] + step_cost;
 					// make a new node and push into the pq
 					// new_search_node->set_g(cost_map[tmp_state] + step_cost);
-					new_search_node->set_g(tmp_node->get_g() + step_cost);
+					double theta = new_search_node->get_state()->get_theta();
+					new_search_node->set_g(tmp_node->get_g() + step_cost + theta * theta);
 					new_search_node->set_h(calculate_heuristics(new_search_node));
 					new_search_node->set_f();
 					// set parent for backtracking
@@ -145,6 +146,7 @@ int A_star::search(static_map *env){
 }
 
 int A_star::backtrack(SearchNode *node){
+	path.clear();
 	auto tmp = node;
 	SearchNode *pretmp;
 	while (tmp && tmp!=this->start_node){
@@ -185,15 +187,13 @@ void A_star::update_goal_list(static_map *env){
 }
 
 double A_star::calculate_heuristics(SearchNode *node){
-	double goal_virtual_w = 1.0;
-	double angle_w = 1.0;
+	double goal_virtual_w = 50.0;
 	double result = DBL_MAX;
 	for (auto it = this->goal_list.begin(); it != this->goal_list.end(); it++){
 		double theta = (node->get_state()->get_theta()); 
 		double c = calc_state_distance(node->get_state(), *it) +
-					 goal_virtual_w * calc_state_distance(*it, virtual_goal) + 
-					 angle_w * theta * theta;
-		result = MIN(result, c);
+					 calc_state_distance(*it, virtual_goal);
+		result = goal_virtual_w * MIN(result, c);
 	}
 	return result;
 }

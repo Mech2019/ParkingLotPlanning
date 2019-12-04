@@ -1,4 +1,5 @@
 #include "planner.h"
+#include <chrono>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ int main(){
 		return -1;
 	}
 	// print to see map info
-	printf("map size is %lfx%lf, total number of spots are %d\n", 
+	printf("map size is %lfx%lf, total number of slots are %d\n", 
 		env->get_map_width(), env->get_map_length(), env->get_slot_num());
 	
 
@@ -50,7 +51,39 @@ int main(){
 
 	// CarState *ego_vehicle = new CarState(8.5, 2.75, PI/2, 1, 0.0);
 	// ofstream traj_file(traj_fn);
-	// for (int i = 0; i < 20; i++){
+	// for (int i = 0; i < 45; i++){
+	// 	traj_file << ego_vehicle->get_x() << "," << ego_vehicle->get_y() << "," << ego_vehicle->get_theta() << endl;
+	// 	ego_vehicle->set_y(ego_vehicle->get_y() + 0.1*5.0);
+	// 	printf("line of sight test: \n");
+	// 	printf("ego_vechicle state:\n");
+	// 	cout << ego_vehicle << endl;
+	// 	env->update_goal_list(ego_vehicle);
+	// 	auto goal = env->get_goal_list();
+	// 	printf("result:\n");
+	// 	for (auto it = goal.begin(); it != goal.end(); it++){
+	// 		auto slot = *it;
+	// 		cout << slot << endl;
+	// 	}
+	// }
+	// ego_vehicle->set_x(26.0);
+	// ego_vehicle->set_y(2.75);
+	// for (int i = 0; i < 45; i++){
+	// 	traj_file << ego_vehicle->get_x() << "," << ego_vehicle->get_y() << "," << ego_vehicle->get_theta() << endl;
+	// 	ego_vehicle->set_y(ego_vehicle->get_y() + 0.1*5.0);
+	// 	printf("line of sight test: \n");
+	// 	printf("ego_vechicle state:\n");
+	// 	cout << ego_vehicle << endl;
+	// 	env->update_goal_list(ego_vehicle);
+	// 	auto goal = env->get_goal_list();
+	// 	printf("result:\n");
+	// 	for (auto it = goal.begin(); it != goal.end(); it++){
+	// 		auto slot = *it;
+	// 		cout << slot << endl;
+	// 	}
+	// }
+	// ego_vehicle->set_x(42.5);
+	// ego_vehicle->set_y(2.75);
+	// for (int i = 0; i < 45; i++){
 	// 	traj_file << ego_vehicle->get_x() << "," << ego_vehicle->get_y() << "," << ego_vehicle->get_theta() << endl;
 	// 	ego_vehicle->set_y(ego_vehicle->get_y() + 0.1*5.0);
 	// 	printf("line of sight test: \n");
@@ -67,17 +100,17 @@ int main(){
 	// traj_file.close();
 	// delete ego_vehicle;
 	// delete env;
-
 	/* test A_star */
 	CarState *ego_vehicle = new CarState(8.5, 2.75, PI/2, 1, 0.0);
 	State *virtual_goal = new State(50.0, 30.0, 0.0, 0.0);
 	A_star *a_star = new A_star(ego_vehicle, virtual_goal, 1.0);
 	vector<CarState *> path;
 
+	auto start_time = chrono::steady_clock::now();
 	env->update_goal_list(ego_vehicle);
 	a_star->update_goal_list(env);
 	if (a_star->search(env) == 0){
-		printf("finished searching\n");
+		// printf("finished searching\n");
 		path = a_star->get_path();
 		if (path.size() > 0){
 			printf("finished loading path\n");
@@ -90,9 +123,73 @@ int main(){
 			a_star->free_search_tree();
 		}
 	}
+	auto end_time = chrono::steady_clock::now();
+    cout << "seconds elapsed: " 
+        << (chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count())/1000.0 << endl;
+
+	// /* test A_star replanning */
+	// CarState *ego_vehicle;
+	// State *virtual_goal = new State(50.0, 30.0, 0.0, 0.0);
+	// A_star *a_star; 
+
+	// vector<CarState *> final_path;
+	// vector<CarState *> path;
 
 
-	delete a_star;
+	// // initialize
+	// ego_vehicle = new CarState(8.5, 2.75, PI/2, 1, 0.0);
+	// a_star = new A_star(ego_vehicle, virtual_goal, 3.0);
+
+	// for (int i = 0; i < 10; i++){
+	// 	printf("i = %d\n", i);
+	// 	env->update_goal_list(ego_vehicle);
+	// 	a_star->update_goal_list(env);
+	// 	if (a_star->search(env) == 0){
+	// 		printf("finished searching\n");
+	// 		path = a_star->get_path();
+	// 		for (int j = 0; j < 10; j++)
+	// 			final_path.push_back(path[j]);
+	// 	}
+	// 	// a_star->free_search_tree();
+	// 	// delete a_star;
+	// 	// delete ego_vehicle;
+	// 	ego_vehicle = final_path[final_path.size() - 1];
+	// }
+
+
+
+	// if (final_path.size() > 0){
+	// 	printf("finished loading path\n");
+	// 	ofstream traj_file(traj_fn);
+	// 	for (auto p:final_path){
+	// 		traj_file << p->get_x() << "," << p->get_y() << "," << p->get_theta() << endl;
+	// 	}
+	// 	traj_file.close();
+	// 	printf("finished writing\n");
+	// 	a_star->free_search_tree();
+	// }
+
+
+
+	// env->update_goal_list(ego_vehicle);
+	// a_star->update_goal_list(env);
+	// if (a_star->search(env) == 0){
+	// 	printf("finished searching\n");
+	// 	path = a_star->get_path();
+	// 	if (path.size() > 0){
+	// 		printf("finished loading path\n");
+	// 		ofstream traj_file(traj_fn);
+	// 		for (auto p:path){
+	// 			traj_file << p->get_x() << "," << p->get_y() << "," << p->get_theta() << endl;
+	// 		}
+	// 		traj_file.close();
+	// 		printf("finished writing\n");
+	// 		a_star->free_search_tree();
+	// 	}
+	// }
+
+
+	// delete a_star;
 	delete ego_vehicle;
 	delete env;
 	return 0;

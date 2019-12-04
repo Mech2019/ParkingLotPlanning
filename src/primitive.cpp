@@ -74,8 +74,8 @@ CarState CarState::nextCarState(CarState start, double dt) const {
 //	Each row in this vector represents the trajectoy of 1 primitive
 //	with the last element to be the final location after performing that primitive
 void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*> & obstacles) const {
-	const double DURATION = 1.0; // time to drive
-	const int SAMPLE_POINTS = 20; // sampled points per each primitive
+	const double DURATION = 1.0; 	// time to drive
+	const int SAMPLE_POINTS = 20; 	// sampled points per each primitive
 	const double delta_MAX = TORAD(30); // max steering angle to right
 	const double delta_MIN = TORAD(-30); // max steering angle to left
 	vector<double> d_delta = { TORAD(-30),TORAD(-25),TORAD(-20),TORAD(-15),TORAD(-10),
