@@ -16,12 +16,16 @@
 
 #define MAP_WIDTH 40   // for temp use
 #define MAP_HEIGHT 28
+#define SAMPLES 1000
 
 
-const double EPSILON_DIST = 0.1;
-const double EPSILON_THETA = M_PI / 60;
-const double RANDOM_STEP = M_PI / 40;
-const double GOAL_THRESHOLD = 0.1;
+const double EPSILON_DIST = 0.2;
+const double EPSILON_THETA = M_PI / 10;
+const double RANDOM_STEP = M_PI / 20;
+const double GOAL_THRESHOLD = 0.5;
+//const double GOAL_THETA_THRESHOLD = M_PI / 18;
+const double GOAL_THETA_THRESHOLD = 2 * M_PI;
+
 const double GOAL_BIAS = 0.05;
 const double TURN_RANGE = M_PI / 3;
 const double TURN_MIN = (M_PI * 5 / 180);
@@ -47,7 +51,7 @@ public:
   void sample_node(int id, CarState& rand_state);
   void sample_node_from_primitives(int id, CarState& rand_state, CarState&
   curr_state);
-  void extend(CarState& rand_state, static_map *env);
+  void extend(int id, CarState& rand_state, static_map *env);
   int nearest_neighbor(CarState& rand_state, CarState& nearest);
   void get_new_state_from_nearest(CarState& rand_state, CarState& nearest,
       CarState& new_state);

@@ -64,15 +64,43 @@ void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
 
 void RRT_Tree::get_new_state_from_nearest(CarState& rand_state, CarState& nearest,
                                 CarState& new_state){
-  new_state.set_x(nearest.get_x() +
-  EPSILON_DIST * (rand_state.get_x() - nearest.get_x()));
+  cout << "random :" << rand_state << endl;
 
-  new_state.set_y(nearest.get_y() +
-  EPSILON_DIST * (rand_state.get_y() - nearest.get_y()));
+//  new_state.set_x(nearest.get_x() +
+//  EPSILON_DIST * (rand_state.get_x() - nearest.get_x()));
+//
+//  new_state.set_y(nearest.get_y() +
+//  EPSILON_DIST * (rand_state.get_y() - nearest.get_y()));
+//
+//  new_state.set_theta(nearest.get_theta() +
+//  EPSILON_THETA * (rand_state.get_theta() - nearest.get_theta()));
 
-  new_state.set_theta(nearest.get_theta() +
-  EPSILON_THETA * (rand_state.get_theta() - nearest.get_theta()));
-//  cout << "new :" << new_state << endl;
+  double d_x, d_y, d_theta;
+
+  if (rand_state.get_x() >= nearest.get_x()){
+    d_x = MIN(EPSILON_DIST, rand_state.get_x() - nearest.get_x());
+  } else {
+    d_x = MAX(-EPSILON_DIST, rand_state.get_x() - nearest.get_x());
+  }
+
+
+  if (rand_state.get_y() >= nearest.get_y()){
+    d_y = MIN(EPSILON_DIST, rand_state.get_y() - nearest.get_y());
+  } else {
+    d_y = MAX(-EPSILON_DIST, rand_state.get_y() - nearest.get_y());
+  }
+
+  if (rand_state.get_theta() >= nearest.get_theta()){
+    d_theta = MIN(EPSILON_THETA, rand_state.get_theta() - nearest.get_theta());
+  } else {
+    d_theta = MAX(-EPSILON_THETA, rand_state.get_theta() - nearest.get_theta());
+  }
+
+  new_state.set_x(nearest.get_x() + d_x);
+  new_state.set_y(nearest.get_y() + d_y);
+  new_state.set_theta(nearest.get_theta() + d_theta);
+
+  cout << "new :" << new_state << endl;
 }
 
 
@@ -109,7 +137,7 @@ int RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
 }
 
 
-void RRT_Tree::extend(CarState& rand_state, static_map *env) {
+void RRT_Tree::extend(int id, CarState& rand_state, static_map *env) {
 
   CarState nearest = CarState();
   CarState new_state = CarState();
@@ -118,14 +146,15 @@ void RRT_Tree::extend(CarState& rand_state, static_map *env) {
 //  cout << "in extend, found nearest " << nearest << endl;
 
   get_new_state_from_nearest(rand_state, nearest, new_state);
+  cout << "new node : " << new_state << endl;
 
   bool collision_check_res = local_collision_check(new_state, env);
-//  cout << "collision check: " << collision_check_res << endl;
+  cout << "collision check: " << collision_check_res << endl;
 
   if (1){
 
     // if no collision, add node
-    int new_id = size;
+    int new_id = id;
     node_map[new_id] = new_state;
     graph[nearest_id].push_back(new_id);
     graph[new_id] = {};
@@ -148,9 +177,7 @@ void RRT_Tree::add_node(int id, static_map *env) {
 
   CarState rand_state = CarState();
   sample_node(id, rand_state);
-  extend(rand_state, env);
-
-
+  extend(id, rand_state, env);
 
 }
 
@@ -161,7 +188,7 @@ void RRT_Tree::add_node_from_primitives(int id, CarState& curr_state, static_map
 
   sample_node_from_primitives(id, rand_state, curr_state);
 
-  extend(rand_state, env);
+  extend(id, rand_state, env);
   nearest_neighbor(rand_state, nearest);
 
   sample_node_from_primitives(id, rand_state, curr_state);
@@ -196,7 +223,12 @@ bool RRT_Tree::check_if_reached(CarState& from, CarState& goal){
     min_dist = curr_dist;
     cout << "min dist = " << min_dist << endl;
   }
-  if (curr_dist < GOAL_THRESHOLD){
+
+  double curr_theta = from.get_theta();
+  double goal_theta = goal.get_theta();
+  double theta_diff = abs(curr_theta - goal_theta);
+
+  if (curr_dist < GOAL_THRESHOLD && theta_diff < GOAL_THETA_THRESHOLD){
     return true;
   }
   return false;
@@ -271,7 +303,7 @@ void local_planner(CarState &start, CarState &goal,
   vector<int> path_id;
 
   RRT_Tree tree(start, goal);
-  for (int i = 1; i<100000; i++){
+  for (int i = 1; i < SAMPLES; i++){
     tree.add_node(i, env);
     if (tree.reached){
       tree.reconstruct_path(i, path_id);
@@ -288,12 +320,13 @@ void local_planner(CarState &start, CarState &goal,
 //  tree.add_node_from_primitives(2, start);
   tree.print_tree();
 
+
   cout << "node map size = " << tree.node_map.size() << endl;
 
-//  for (int i=0; i < tree.node_map.size(); i++){
+  for (int i=0; i < tree.node_map.size(); i++){
 //    outfile << tree.node_map[i] << endl;
-//    cout << tree.node_map[i] << endl;
-//  }
+    cout << tree.node_map[i] << endl;
+  }
 
   outfile << goal << endl;
   outfile.close();
