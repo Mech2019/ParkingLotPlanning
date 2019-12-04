@@ -48,7 +48,7 @@ public:
   RRT_Tree(CarState start, CarState goal);
   void add_node(int id, static_map *env);
   void add_node_from_primitives(int id, CarState& curr_state, static_map *env);
-  void sample_node(int id, CarState& rand_state);
+  void sample_node(int id, CarState& rand_state, CarState& curr_state);
   void sample_node_from_primitives(int id, CarState& rand_state, CarState&
   curr_state);
   void extend(int id, CarState& rand_state, static_map *env);
@@ -60,6 +60,8 @@ public:
   double calculate_distance(CarState& from_state, CarState& to_state);
   bool check_if_reached(CarState& from, CarState& goal);
   void reconstruct_path(int last_node_id, vector<int> &path_id);
+  void sample_state(CarState curr_state, CarState sample_state);
+
 
 };
 

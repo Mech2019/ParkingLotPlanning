@@ -11,7 +11,7 @@ RRT_Tree::RRT_Tree(CarState start, CarState goal) {
   reached = 0;
 }
 
-void RRT_Tree::sample_node(int id, CarState& rand_state) {
+void RRT_Tree::sample_node(int id, CarState& rand_state, CarState& curr_state) {
   srand(id); // fixed for debug reason
 
   double rand_x, rand_y, rand_theta;
@@ -26,13 +26,15 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
 //    cout << "BIASED!" << endl;
 
   } else {
-    rand_x = rand() % MAP_WIDTH - MAP_WIDTH/2;
-    rand_y = rand() % MAP_HEIGHT - MAP_HEIGHT/2;
-    rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
+//    rand_x = rand() % MAP_WIDTH - MAP_WIDTH/2;
+//    rand_y = rand() % MAP_HEIGHT - MAP_HEIGHT/2;
+//    rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
 
+    rand_x = rand() % 10 - 10/2 + curr_state.get_x();
+    rand_y = rand() % 10 - 10/2 + curr_state.get_y();
+    rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
 //    cout << "rand theta: " << rand_theta << endl;
   }
-
 
 
   rand_state.set_x(rand_x);
@@ -300,6 +302,20 @@ bool local_collision_check(CarState &curr_state, static_map *env) {
   return false;
 }
 
+void sample_state(int id, CarState curr_state, CarState sample_state){
+
+  double curr_x = curr_state.get_x();
+  double curr_y = curr_state.get_y();
+  double curr_theta = curr_state.get_theta();
+  srand(id); // for debug
+  double s_x = rand()%10 - 5 + curr_x;
+  double s_y = rand()%10 - 5 + curr_y;
+  double s_theta = rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
+
+  sample_state.set_x(s_x);
+  sample_state.set_y(s_y);
+  sample_state.set_theta(s_theta);
+}
 
 
 
