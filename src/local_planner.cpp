@@ -360,8 +360,8 @@ void local_planner(CarState &start, CarState &goal,
   cout << "node map size = " << tree.node_map.size() << endl;
 
   for (int i=0; i < tree.node_map.size(); i++){
-//    outfile << tree.node_map[i] << endl;
-//    cout << tree.node_map[i] << endl;
+    outfile << tree.node_map[i] << endl;
+    cout << tree.node_map[i] << endl;
   }
 
   outfile << goal << endl;
