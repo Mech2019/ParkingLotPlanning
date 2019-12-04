@@ -136,7 +136,7 @@ int A_star::search(static_map *env){
 		return -1;
 	}
 	// back tracking
-	if (backtrack(backtrack_node) != 0){
+	if (backtrack(backtrack_node->get_parent()) != 0){
 		printf("Backtrack failed\n");
 		free_search_tree();
 		return -1;
