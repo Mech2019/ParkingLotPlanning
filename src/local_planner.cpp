@@ -23,12 +23,14 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
     rand_x = goal_pos.get_x();
     rand_y = goal_pos.get_y();
     rand_theta =  goal_pos.get_theta();
-    cout << "BIASED!" << endl;
+//    cout << "BIASED!" << endl;
 
   } else {
     rand_x = rand() % MAP_WIDTH;
     rand_y = rand() % MAP_HEIGHT;
     rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP;
+
+//    cout << "rand theta: " << rand_theta << endl;
   }
 
 

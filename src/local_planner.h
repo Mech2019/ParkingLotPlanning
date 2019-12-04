@@ -18,11 +18,13 @@
 #define MAP_HEIGHT 28
 
 
-const double EPSILON_DIST = 0.5;
-const double EPSILON_THETA = M_PI / 10;
-const double RANDOM_STEP = M_PI / 20;
+const double EPSILON_DIST = 0.15;
+const double EPSILON_THETA = M_PI/60;
+const double RANDOM_STEP = M_PI/20;
 const double GOAL_THRESHOLD = 0.2;
 const double GOAL_BIAS = 0.05;
+const double TURN_RANGE = M_PI / 3;
+const double TURN_MIN = (M_PI * 5 / 180);
 
 void local_planner(CarState &start_state, CarState &goal_state,
                    vector<CarState>& plan);
