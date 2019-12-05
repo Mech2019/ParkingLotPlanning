@@ -211,7 +211,7 @@ void A_star::update_goal_list(static_map *env){
 }
 
 double A_star::calculate_heuristics(SearchNode *node){
-	double goal_virtual_w = 1000.0;
+	double goal_virtual_w = 1000000000000000.0;
 	double result = DBL_MAX;
 	for (auto it = this->goal_list.begin(); it != this->goal_list.end(); it++){
 		double theta = (node->get_state()->get_theta()); 

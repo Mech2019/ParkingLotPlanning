@@ -7,54 +7,54 @@ using namespace std;
 // 	return (x >= s1->get_x() - car_wid/2 && x <= s1->get_x() + car_wid/2 
 // 		&& y <= s1->get_y() + car_len/2 && y >= s1->get_y() - car_len/2);
 // }
-// bool intersect_point(State *s1, double x, double y) {
-//     double new_x = x - s1->get_x();
-//     double new_y = y - s1->get_y();
-//     double proj_x = new_x * cos(s1->get_theta()) + new_y * sin(s1->get_theta());
-//     double proj_y = new_x * sin(s1->get_theta()) + new_y * cos(s1->get_theta());
-//     return (abs(proj_x) <= car_len/2 && abs(proj_y) <= car_wid/2);
-// }
+bool intersect_point(State *s1, double x, double y) {
+    double new_x = x - s1->get_x();
+    double new_y = y - s1->get_y();
+    double proj_x = new_x * cos(s1->get_theta()) + new_y * sin(s1->get_theta());
+    double proj_y = new_x * sin(s1->get_theta()) + new_y * cos(s1->get_theta());
+    return (abs(proj_x) <= car_len/2 && abs(proj_y) <= car_wid/2);
+}
 
-// bool onSegment(double x1, double y1, double x2, double y2, double x3, double y3) 
-// { 
-//     if (x2 <= MAX(x1, x3) && x2 >= MIN(x1, x3) && 
-//         y2 <= MAX(y1, y3) && y2 >= MIN(y1, y3)) 
-//        return true; 
+bool onSegment(double x1, double y1, double x2, double y2, double x3, double y3) 
+{ 
+    if (x2 <= MAX(x1, x3) && x2 >= MIN(x1, x3) && 
+        y2 <= MAX(y1, y3) && y2 >= MIN(y1, y3)) 
+       return true; 
   
-//     return false; 
-// } 
+    return false; 
+} 
 
-// int orientation(double x1, double y1, double x2, double y2, double x3, double y3) 
-// { 
-//     double val = (y2 - y1) * (x3 - x2) - 
-//               (x2 - x1) * (y3 - y2); 
+int orientation(double x1, double y1, double x2, double y2, double x3, double y3) 
+{ 
+    double val = (y2 - y1) * (x3 - x2) - 
+              (x2 - x1) * (y3 - y2); 
   
-//     if (val == 0) return 0;  // colinear 
+    if (val == 0) return 0;  // colinear 
   
-//     return (val > 0)? 1: 2; // clock or counterclock wise 
-// } 
+    return (val > 0)? 1: 2; // clock or counterclock wise 
+} 
 
-// bool intersect_lines(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-// 	int o1 = orientation(x1, y1, x2, y2, x3, y3); 
-//     int o2 = orientation(x1, y1, x2, y2, x4, y4); 
-//     int o3 = orientation(x3, y3, x4, y4, x1, y1); 
-//     int o4 = orientation(x3, y3, x4, y4, x2, y2); 
+bool intersect_lines(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+	int o1 = orientation(x1, y1, x2, y2, x3, y3); 
+    int o2 = orientation(x1, y1, x2, y2, x4, y4); 
+    int o3 = orientation(x3, y3, x4, y4, x1, y1); 
+    int o4 = orientation(x3, y3, x4, y4, x2, y2); 
   
-//     // General case 
-//     if (o1 != o2 && o3 != o4) 
-//         return true; 
+    // General case 
+    if (o1 != o2 && o3 != o4) 
+        return true; 
   
-//     // Special Cases 
-//     if (o1 == 0 && onSegment(x1, y1, x3, y3, x2, y2)) return true; 
+    // Special Cases 
+    if (o1 == 0 && onSegment(x1, y1, x3, y3, x2, y2)) return true; 
   
-//     if (o2 == 0 && onSegment(x1, y1, x4, y4, x2, y2)) return true; 
+    if (o2 == 0 && onSegment(x1, y1, x4, y4, x2, y2)) return true; 
   
-//     if (o3 == 0 && onSegment(x3, y3, x1, y1, x4, y4)) return true; 
+    if (o3 == 0 && onSegment(x3, y3, x1, y1, x4, y4)) return true; 
   
-//     if (o4 == 0 && onSegment(x3, y3, x2, y2, x4, y4)) return true; 
+    if (o4 == 0 && onSegment(x3, y3, x2, y2, x4, y4)) return true; 
   
-//     return false; 
-// }
+    return false; 
+}
 // template <class T>
 // vector<vector<double>> inflate(T *s){
 // 	double theta = s->get_theta();
