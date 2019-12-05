@@ -20,9 +20,9 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
 
   if (rand_for_bias < (GOAL_BIAS * 100)) {
 
-    rand_x = goal_pos.get_x() - start_pos.get_x();
-    rand_y = goal_pos.get_y() - start_pos.get_y();
-    rand_theta =  goal_pos.get_theta() - start_pos.get_theta();
+    rand_x = goal_pos.get_x();
+    rand_y = goal_pos.get_y();
+    rand_theta =  goal_pos.get_theta();
 //    cout << "BIASED!" << endl;
 
   } else {
@@ -78,35 +78,35 @@ void RRT_Tree::get_new_state_from_nearest(CarState& rand_state, CarState& neares
 
   double d_x, d_y, d_theta;
 
-  if (rand_state.get_x() >= 0){
-    d_x = MIN(EPSILON_DIST, rand_state.get_x());
+  if (rand_state.get_x() - nearest.get_x() >= 0){
+    d_x = MIN(EPSILON_DIST, rand_state.get_x() - nearest.get_x());
   } else {
 //    cout << "check01" << endl;
-    d_x = MAX(-EPSILON_DIST, rand_state.get_x());
+    d_x = MAX(-EPSILON_DIST, rand_state.get_x() - nearest.get_x());
   }
 
 
-  if (rand_state.get_y() >=0){
-    d_y = MIN(EPSILON_DIST, rand_state.get_y());
+  if (rand_state.get_y() - nearest.get_y() >=0){
+    d_y = MIN(EPSILON_DIST, rand_state.get_y() - nearest.get_y());
   } else {
-    d_y = MAX(-EPSILON_DIST, rand_state.get_y());
+    d_y = MAX(-EPSILON_DIST, rand_state.get_y() - nearest.get_y());
   }
 
-  if (rand_state.get_theta() >= 0){
-    d_theta = MIN(EPSILON_THETA, rand_state.get_theta());
+  if (rand_state.get_theta() - nearest.get_theta() >= 0){
+    d_theta = MIN(EPSILON_THETA, rand_state.get_theta()  - nearest.get_theta());
   } else {
-    d_theta = MAX(-EPSILON_THETA, rand_state.get_theta());
+    d_theta = MAX(-EPSILON_THETA, rand_state.get_theta() - nearest.get_theta());
   }
 
 //  cout << d_x << ", " << d_y << ", " << d_theta << endl;
 
-  new_state.set_x(nearest.get_x() - d_x);
-  new_state.set_y(nearest.get_y() - d_y);
-  new_state.set_theta(nearest.get_theta() - d_theta);
+  new_state.set_x(nearest.get_x() + d_x);
+  new_state.set_y(nearest.get_y() + d_y);
+  new_state.set_theta(nearest.get_theta() + d_theta);
 
-  cout << "neareset : " << nearest << endl;
-  cout << "random   :" << rand_state << endl;
-  cout << "new      :" << new_state << endl;
+//  cout << "neareset : " << nearest << endl;
+//  cout << "random   : " << rand_state << endl;
+//  cout << "new      : " << new_state << endl;
 }
 
 
@@ -129,29 +129,31 @@ int RRT_Tree::nearest_neighbor(CarState& rand_state, CarState& nearest){
 
   int temp_node_size = node_map.size();
 
+//  cout << "node map size = " << node_map.size() << endl;
   for (auto map : node_map){
 //    calculate_distance
     int temp_id = map.first;
     CarState temp_state = map.second;
 
-    cout << "  temp state: " << temp_state << endl;
-    cout << "  rand state: " << rand_state << endl;
+//    cout << "  temp state: " << temp_state << endl;
+//    cout << "  rand state: " << rand_state << endl;
     curr_dist = calculate_distance(temp_state, rand_state);
 
     if (curr_dist < nearest_dist){
+//      cout << "Update " << temp_id << endl;
       nearest_dist = curr_dist;
       nearest_id = temp_id;
     }
 
-    cout << "  Map node: " << temp_id << ", dist: ";
-    cout <<curr_dist << ", " << nearest_dist << ", "<< nearest_id << endl;
+//    cout << "  Map node: " << temp_id << ", dist: ";
+//    cout <<curr_dist << ", " << nearest_dist << ", "<< nearest_id << endl;
 
   }
 
 
 //  cout << "neareset node id " << nearest_id << ", " << nearest_dist << endl;
   nearest = node_map[nearest_id];
-//  cout << "IN nearest: " << nearest << endl;
+//  cout << "IN nearest ID = " << nearest_id << ", val =" << nearest << endl;
   return nearest_id;
 }
 
@@ -168,9 +170,9 @@ void RRT_Tree::extend(int id, CarState& rand_state, static_map *env) {
 //  cout << "new node : " << new_state << endl;
 
   bool collision_check_res = local_collision_check(new_state, env);
-//  cout << "_____collision check: " << collision_check_res << endl;
+//  cout << "__________collision check: " << collision_check_res << endl;
 
-  if (!collision_check_res || 1){
+  if ((!collision_check_res)){
 
     // if no collision, add node
     int new_id = id;
@@ -310,7 +312,7 @@ void sample_state(int id, CarState curr_state, CarState sample_state){
   srand(id); // for debug
   double s_x = rand()%10 - 5 + curr_x;
   double s_y = rand()%10 - 5 + curr_y;
-  double s_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
+  double s_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP;
 
   sample_state.set_x(s_x);
   sample_state.set_y(s_y);
@@ -327,8 +329,11 @@ void local_planner(CarState &start, CarState &goal,
   cout << "start " << start << endl;
   cout << "goal " << goal << endl;
 
-  local_collision_check(start, env);
-  local_collision_check(goal, env);
+  bool res1 = local_collision_check(start, env);
+  bool res2 = local_collision_check(goal, env);
+
+  cout << "start collision check: " << res1 << endl;
+  cout << "goal collision check: " << res2 << endl;
 
   // open a file in write mode.
   ofstream outfile;
@@ -340,7 +345,11 @@ void local_planner(CarState &start, CarState &goal,
 
   RRT_Tree tree(start, goal);
   for (int i = 1; i < SAMPLES; i++){
+//    cout << "NODE id = " << i << endl;
     tree.add_node(i, env);
+
+//    tree.print_tree();
+
     if (tree.reached){
       tree.reconstruct_path(i, path_id);
       break;
@@ -357,11 +366,22 @@ void local_planner(CarState &start, CarState &goal,
 //  tree.print_tree();
 
 
-  cout << "node map size = " << tree.node_map.size() << endl;
+//  cout << "node map size = " << tree.node_map.size() << endl;
 
   for (int i=0; i < tree.node_map.size(); i++){
-    outfile << tree.node_map[i] << endl;
-    cout << tree.node_map[i] << endl;
+//    outfile << tree.node_map[i] << endl;
+//    cout << tree.node_map[i] << endl;
+  }
+
+
+  for (auto it = tree.graph.begin(); it != tree.graph.end(); it++) {
+//    cout << it->first << ": {";
+//    auto next = it->second;
+//    for (auto vec_it = next.begin(); vec_it != next.end(); vec_it++) {
+//      cout << *vec_it << ", ";
+//    }
+//    cout << " }" << endl;
+    outfile << tree.node_map[it->first] << endl;
   }
 
   outfile << goal << endl;

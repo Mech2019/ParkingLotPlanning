@@ -16,15 +16,15 @@
 
 #define MAP_WIDTH 40   // for temp use
 #define MAP_HEIGHT 28
-#define SAMPLES 10
+#define SAMPLES 100
 
 
-const double EPSILON_DIST = 0.1;
+const double EPSILON_DIST = 0.15;
 const double EPSILON_THETA = M_PI / 10;
 const double RANDOM_STEP = M_PI / 20;
-const double GOAL_THRESHOLD = 1;
-//const double GOAL_THETA_THRESHOLD = M_PI / 18;
-const double GOAL_THETA_THRESHOLD = 2 * M_PI;
+const double GOAL_THRESHOLD = 0.2;
+const double GOAL_THETA_THRESHOLD = M_PI / 10;
+//const double GOAL_THETA_THRESHOLD = 2 * M_PI;
 
 const double GOAL_BIAS = 0.05;
 const double TURN_RANGE = M_PI / 3;
