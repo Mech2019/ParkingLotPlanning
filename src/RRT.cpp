@@ -1,6 +1,7 @@
 #include "RRT.h"
-#include <time.h>
+#include <ctime>
 #include <math.h>
+#include <random>
 using namespace std;
 
 /* RRT search */
@@ -13,105 +14,74 @@ RRT::RRT(CarState *start_, CarState *goal_, double Vs, double Vg){
 }
 
 RRT_node *RRT::sample_new_node(){
-	srand(time(NULL));
-	int seed = rand()%(tree.size());
+	// std::default_random_engine generator;
+	// std::uniform_int_distribution<int> distribution_node(0,tree.size()-1);
+	// int seed = distribution_node(generator);
+	// printf("tree_size = %d\n", this->tree.size());
+	int seed = rand() % (this->tree.size());
+	// printf("seed = %d\n", seed);
 	return tree[seed];
 }
 
 RRT_node *RRT::generate_new_node(RRT_node *q_near, static_map *env){
-	vector<double> V = {-2, -1, 1, 2};
+	// vector<double> V = {-2, -1, 1, 2};
+	// srand((unsigned) time(0));
+	vector<double> d_delta = { TORAD(-30),TORAD(-25),TORAD(-20),TORAD(-15),TORAD(-10),
+		TORAD(-5),TORAD(0),TORAD(5),TORAD(10),TORAD(15),TORAD(20),TORAD(25),TORAD(30)};
 	// srand(time(NULL));
-	double rand_vel = V[rand()%3];
+	// std::default_random_engine generator;
+ //  	std::uniform_real_distribution<double> distribution_v(V_MIN, V_MAX);
+ //  	std::uniform_int_distribution<int> distribution_del(0,d_delta.size()-1);
+
+	double rand_vel = V_MIN + (double)rand() / RAND_MAX * (V_MAX - V_MIN);
+	// double rand_vel = distribution_v(generator);
+	// double rand_ddel = distribution_del(generator);
+	
+
 	double rand_ddel = dDEL_MIN + (double)rand() / RAND_MAX * (dDEL_MAX - dDEL_MIN);
+	// double rand_ddel = d_delta[rand()%(d_delta.size())];
+	// double rand_ddel = 0;
+
+	rand_vel *= ((rand()%2) == 0? -1:1);
 
 	// calculate vehicle trajectory by vehicle kinematics
 	double dt = RRT_DURATION / RRT_SAMPLE;
 	// initialization
-	auto q_tmp = q_near;
-	auto tmp_state = q_tmp->get_state();
-	double vel = q_tmp->get_velocity();
-	double new_delta = tmp_state->get_delta() + rand_ddel;
-	if (new_delta < delta_MIN || new_delta > delta_MAX) 
-		return NULL;
+	vector<RRT_node *> state_vec;
+	state_vec.push_back(q_near);
 	
-	CarState new_car = *tmp_state;
-	new_car.set_delta(new_delta);
-
 	for (int i = 0; i < RRT_SAMPLE; i++) {
-		// new_car = tmp_state->nextCarState(new_car, vel, dt);
-
-		// calculate next state with different velocity
-		double start_x = new_car.get_x();
-		double start_y = new_car.get_y();
-		double theta = new_car.get_theta();
-		double delta = new_car.get_delta();
-		double flag = new_car.get_flag();
-
-		double curve_length = vel * dt;
-		double turning_radius = abs(wheel_base / tan(delta)) + car_wid * 0.5;
-		double dtheta = abs(curve_length / turning_radius);
-
-		//if wheel turn right, reverse the change in heading
-		if (delta < 0.0) {
-			dtheta = -dtheta;
-		}
-
-		double new_theta = 0.0;
-		new_theta = theta + dtheta;
-		if (new_theta > 2.0 * PI) {
-			new_theta -= 2.0 * PI;
-		}
-		else if (new_theta < 0.0) {
-			new_theta += 2.0 * PI;
-		}
-
-		double new_x_global, new_y_global;
-		double rot_x, rot_y, rot_theta;
-
-		if (delta == 0.0) {
-			new_x_global = start_x + cos(theta)*curve_length;
-			new_y_global = start_y + sin(theta)*curve_length;
-		}
-		else {
-			//find rotation center
-			if (delta > 0.0) {
-				rot_theta = theta + PI / 2.0;
-			}
-			else {
-				rot_theta = theta - PI / 2.0;
-			}
-
-			rot_x = start_x + turning_radius * cos(rot_theta);
-			rot_y = start_y + turning_radius * sin(rot_theta);
-			double local_theta = atan2(start_y - rot_y, start_x - rot_x);
-
-			//homogeneous tranformation to get new global coordinates
-			new_x_global = cos(dtheta) * turning_radius * cos(local_theta)
-				- sin(dtheta) * turning_radius * sin(local_theta)
-				+ rot_x;
-			new_y_global = sin(dtheta) * turning_radius * cos(local_theta)
-				+ cos(dtheta) * turning_radius * sin(local_theta)
-				+ rot_y;
-		}
-
-		new_car = *(new CarState(new_x_global, new_y_global, new_theta, flag, delta));
-
-
+		auto prev_node = state_vec[i];
+		auto prev_state = prev_node->get_state();
+		double vel = prev_node->get_velocity();
+		double dtheta = vel / wheel_base * rand_ddel;
+		// update
+		double x = prev_state->get_x() + vel * cos(prev_state->get_theta()) * dt;
+		double y = prev_state->get_y() + vel * sin(prev_state->get_theta()) * dt;
+		double theta = prev_state->get_theta() + dtheta * dt;
+		double v = rand_vel;
+		// build a new state
+		CarState *new_car = new CarState(x, y, theta, vel>0, rand_ddel);
+		RRT_node *new_node = new RRT_node(new_car, rand_vel);
+		// collision check
 		auto obstacles = env->get_occupied_slots();
 		for (auto obs : obstacles){
-			if (RRT_collision_check(obs, &new_car))
+			if (RRT_collision_check(obs, new_car))
 				return NULL;
 		}
-		tmp_state = &new_car;
+		// printf("found a node\n");
+		state_vec.push_back(new_node);
+		// build the individual fine path
 	}
-	auto end = new_car;
-	auto result_state = new CarState(end.get_x(),end.get_y(), end.get_theta(), end.get_flag(), end.get_delta());
-	cout << result_state << ", " << rand_vel << "," << TODEG(rand_ddel) << endl;
-	RRT_node *result = new RRT_node(result_state);
+	
+	auto result = state_vec[state_vec.size() - 1];
+	// push the last node into the tree
 	result->set_velocity(rand_vel);
 	result->set_parent(q_near);
+	result->set_path(state_vec);
 	q_near->insert_child(result);
 	this->tree.push_back(result);
+	// printf("tree_size = %d\n", this->tree.size());
 	this->count += 1;
 	return result;
 }
@@ -120,21 +90,24 @@ void RRT::backtrack(RRT_node *q_end){
 	this->path.clear();
 	RRT_node *q_tmp = q_end;
 	while (q_tmp){
-		this->path.insert(this->path.begin(), q_tmp->get_state());
+		auto p = q_tmp->get_path();
+		this->path.insert(this->path.begin(), p.begin(), p.end());
 		q_tmp = q_tmp->get_parent();
 	}
 }
 
 void RRT::search(static_map *env){
 	while(count <= MAX_COUNT){
-		if (count % 100 == 0)
+		if (count % 100 == 0 && count)
 			printf("tree size %d\n", count);
 		RRT_node *q_rand = sample_new_node();
 		RRT_node *q_new = generate_new_node(q_rand, env);
 		if (q_new){
-			printf("distance = %lf\n", q_new->calc_RRT_node_dist(this->goal));
+			double d = q_new->calc_RRT_node_dist(this->goal);
+			// if (d <= 4.0)
+				// printf("distance = %lf, speed = %lf\n", d, q_new->get_velocity());
 		 	// cout << this->goal->get_state() << endl;
-		 	if (q_new->calc_RRT_node_dist(this->goal) <= TOLERANCE){
+		 	if (d <= TOLERANCE){
 				printf("goal reached.\n");
 				q_end = q_new;
 				backtrack(q_end);
@@ -142,7 +115,17 @@ void RRT::search(static_map *env){
 			}
 		}
 	}
+
 	printf("goal not reached.\n");
+
+	// dbg visualization
+	printf("expanded state\n");
+	ofstream traj_file("traj.csv");
+	for (auto rrt_node : tree){
+		auto p = rrt_node->get_state();
+		traj_file << p << endl;
+	}
+	traj_file.close();
 }
 
 std::vector<CarState *> RRT::get_path(){return this->path;}
@@ -161,8 +144,10 @@ RRT_node::RRT_node(CarState *state_, double v_){
 double RRT_node::calc_RRT_node_dist(RRT_node *rhs){
 	double dx = state->get_x() - rhs->get_state()->get_x();
 	double dy = state->get_y() - rhs->get_state()->get_y();
-	double dtheta = state->get_theta() - rhs->get_state()->get_theta();
+	double dtheta = min(state->get_theta() - rhs->get_state()->get_theta(),
+		state->get_theta() - (rhs->get_state()->get_theta() + PI));
 	return (sqrt(dx*dx + dy*dy + dtheta*dtheta));
+	// return (sqrt(dx*dx + dy*dy));
 }
 
 // set functions
@@ -179,9 +164,14 @@ std::vector<RRT_node *> RRT_node::get_child(){return this->child;}
 
 RRT_node *RRT_node::get_parent(){return this->parent;}
 
+void RRT_node::set_path(std::vector<RRT_node *> state_vec){
+	for (auto s:state_vec)
+		path_from_parent.push_back(s->get_state());
+}
 
-
-
+std::vector<CarState *> RRT_node::get_path(){
+	return path_from_parent;
+}
 
 /* RRT helper functions */
 bool linesegmentcheck(double x1, double x2, double x3, double x4,

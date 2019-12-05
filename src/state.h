@@ -43,8 +43,8 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, State *s)
     {
-	    os << s->get_x() << " " << s->get_y() << " " 
-	    	<< s->get_theta() << " " << s->get_flag() << " ";
+	    os << s->get_x() << "," << s->get_y() << "," 
+	    	<< s->get_theta() << "," << s->get_flag();
 	    return os;
 	}
 };
@@ -74,6 +74,7 @@ struct StateHasher{
 class CarState : public State {
 private:
 	double delta; // steering angle
+	double vel;
 	CarState nextCarState(CarState car, double dt) const;
 	// CarState nextCarState(CarState start, double velocity, double dt) const; 
 public:
@@ -83,15 +84,17 @@ public:
 	friend ostream& operator<<(ostream& os, CarState& car);
 
 	double get_delta();
+	double get_vel(){return vel;}
 	void set_delta(double delta_);
-
+	void set_vel(double v_){this->vel = v_;}
 	// input: 
 	//	empty 2D vector of CarState to store sampled locations
 	// Output: 
 	//	filled 2D vector
 	//	Each row in this vector represents the trajectoy of 1 primitive
 	//	with the last element to be the final location after performing that primitive
-	void compute_primitive(std::vector<std::vector<CarState> > &result, vector<State*> & obstacles) const;
+	void compute_primitive(std::vector<std::vector<CarState> > &result, vector<State*> & obstacles);
+	CarState *apply_primitive(double V, double delta, double dt);
 };
 
 #endif

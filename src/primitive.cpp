@@ -66,64 +66,19 @@ CarState CarState::nextCarState(CarState start, double dt) const {
 	return new_state;
 }
 
-// CarState CarState::nextCarState(CarState start, double velocity, double dt) const {
-// 	double start_x = start.get_x();
-// 	double start_y = start.get_y();
-// 	double theta = start.get_theta();
-// 	double delta = start.get_delta();
-// 	double flag = start.get_flag();
+CarState *CarState::apply_primitive(double V, double delta, double dt) {
+	double curve_length = car_speed * dt;
+	double turning_radius = abs(wheel_base / tan(delta)) + car_wid * 0.5;
+	double dtheta = abs(curve_length / turning_radius);
+	// update
+	double new_x = x + V * cos(get_theta()) * dt;
+	double new_y = y + V * sin(get_theta()) * dt;
+	double new_theta = get_theta() + dtheta;
+	double new_v = V;
 
-// 	double curve_length = velocity * dt;
-// 	double turning_radius = abs(wheel_base / tan(delta)) + car_wid * 0.5;
-// 	double dtheta = abs(curve_length / turning_radius);
-
-// 	//if wheel turn right, reverse the change in heading
-// 	if (delta < 0.0) {
-// 		dtheta = -dtheta;
-// 	}
-
-// 	double new_theta = 0.0;
-// 	new_theta = theta + dtheta;
-// 	if (new_theta > 2.0 * PI) {
-// 		new_theta -= 2.0 * PI;
-// 	}
-// 	else if (new_theta < 0.0) {
-// 		new_theta += 2.0 * PI;
-// 	}
-
-// 	double new_x_global, new_y_global;
-// 	double rot_x, rot_y, rot_theta;
-
-// 	if (delta == 0.0) {
-// 		new_x_global = start_x + cos(theta)*curve_length;
-// 		new_y_global = start_y + sin(theta)*curve_length;
-// 	}
-// 	else {
-// 		//find rotation center
-// 		if (delta > 0.0) {
-// 			rot_theta = theta + PI / 2.0;
-// 		}
-// 		else {
-// 			rot_theta = theta - PI / 2.0;
-// 		}
-
-// 		rot_x = start_x + turning_radius * cos(rot_theta);
-// 		rot_y = start_y + turning_radius * sin(rot_theta);
-// 		double local_theta = atan2(start_y - rot_y, start_x - rot_x);
-
-// 		//homogeneous tranformation to get new global coordinates
-// 		new_x_global = cos(dtheta) * turning_radius * cos(local_theta)
-// 			- sin(dtheta) * turning_radius * sin(local_theta)
-// 			+ rot_x;
-// 		new_y_global = sin(dtheta) * turning_radius * cos(local_theta)
-// 			+ cos(dtheta) * turning_radius * sin(local_theta)
-// 			+ rot_y;
-// 	}
-
-// 	CarState new_state(new_x_global, new_y_global, new_theta, flag, delta);
-
-// 	return new_state;
-// }
+	CarState *result = new CarState(new_x, new_y, new_theta, V > 0, delta);
+	return result;
+}
 
 // input: 
 //	empty 2D vector of CarState to store sampled locations
@@ -132,7 +87,7 @@ CarState CarState::nextCarState(CarState start, double dt) const {
 //	filled 2D vector
 //	Each row in this vector represents the trajectoy of 1 primitive
 //	with the last element to be the final location after performing that primitive
-void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*> & obstacles) const {
+void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*> & obstacles) {
 	const double DURATION = 1.0; 	// time to drive
 	const int SAMPLE_POINTS = 20; 	// sampled points per each primitive
 	const double delta_MAX = TORAD(30); // max steering angle to right
@@ -143,7 +98,8 @@ void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*
 	result.clear();
 	for (double d : d_delta) {
 		double new_delta = delta + d;
-		if (new_delta < delta_MIN || new_delta > delta_MAX) continue;
+		if (new_delta < delta_MIN || new_delta > delta_MAX) 
+			continue;
 		
 		vector<CarState> temp;
 		CarState new_car = *this;
@@ -152,6 +108,7 @@ void CarState::compute_primitive(vector<vector<CarState>> &result, vector<State*
 		double dt = DURATION / SAMPLE_POINTS;
 		for (int i = 0; i < SAMPLE_POINTS; i++) {
 			new_car = this->nextCarState(new_car, dt);
+			// new_car = *(this->apply_primitive(car_speed, new_delta, dt));
 			temp.push_back(new_car);
 			if (total_collision_check(obstacles, &new_car)) {
 				obstacle_free = false;

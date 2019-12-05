@@ -7,13 +7,13 @@
 #include "map.h"
 #include "util.h"
 
-static const double TOLERANCE = 1;
+static const double TOLERANCE = 0.1;
 static const int RRT_SAMPLE = 10;
-static const int MAX_COUNT = 10000;
-static const double RRT_DURATION = 0.5;
+static const int MAX_COUNT = 70000;
+static const double RRT_DURATION = 1.0;
 static const double BIAS = 0.10;
-static const double A_MAX = 3;	// maximum acceleration of 3 m/s^2
-static const double A_MIN = -3; // maximum deceleration
+static const double V_MAX = 4;	// maximum velocity of 3 m/s
+static const double V_MIN = 1; // maximum velocity
 static const double dDEL_MAX = TORAD(30);	// maximum change of delta in a second
 static const double dDEL_MIN = -TORAD(30); // minimum change of delta in a second
 
@@ -23,6 +23,7 @@ private:
 	CarState *state;
 	RRT_node *parent;
 	std::vector<RRT_node *> child;
+	std::vector<CarState *> path_from_parent;
 	double v;
 public:
 	RRT_node(CarState *state_);
@@ -34,13 +35,17 @@ public:
 	void set_velocity(double v_);
 	void insert_child(RRT_node *child_);
 	void set_parent(RRT_node *parent_);
+	void set_path(std::vector<RRT_node *> state_vec);
 
 	// get functions
 	CarState *get_state();
 	double get_velocity();
 	std::vector<RRT_node *> get_child();
 	RRT_node *get_parent();
+	std::vector<CarState *> get_path();
 };
+
+bool isEqual(RRT_node *lhs, RRT_node *rhs);
 
 class RRT{
 private:
@@ -94,6 +99,23 @@ bool RRT_collision_check(State *s1, T *s2){
 			double x3 = inflated_s2[0][j], x4 = inflated_s2[0][j+1];
 			double y3 = inflated_s2[1][j], y4 = inflated_s2[1][j+1];
 
+			if (x1 < 0 || x1 > map_wid)
+				return true;
+			if (x2 < 0 || x2 > map_wid)
+				return true;
+			if (x3 < 0 || x3 > map_wid)
+				return true;
+			if (x4 < 0 || x4 > map_wid)
+				return true;
+
+			if (y1 < 0 || y1 > map_len)
+				return true;
+			if (y2 < 0 || y2 > map_len)
+				return true;
+			if (y3 < 0 || y3 > map_len)
+				return true;
+			if (y4 < 0 || y4 > map_len)
+				return true;
 			// printf("%lf, %lf, %lf, %lf\n", x1,y1,x2,y2);
 			// printf("%lf, %lf, %lf, %lf\n", x3,y3,x4,y4);
 			// printf("result = %d\n", linesegmentcheck(x1,x2,x3,x4,y1,y2,y3,y4));

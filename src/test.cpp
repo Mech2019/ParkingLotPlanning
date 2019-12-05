@@ -6,6 +6,7 @@ using namespace std;
 static const char *traj_fn = "traj.csv";
 
 int main(){
+	srand((unsigned) time(0));
 	printf("This is a test script for functionality.\n");
 	/* test map parsing */
 	vector<vector<double>> input;
@@ -218,8 +219,9 @@ int main(){
 
 
 	/* Test RRT */
-	CarState *ego_vehicle = new CarState(42.5, 12.9548, 1.85903, 1, 0.0);
-	CarState *goal = new CarState(48.25, 12.25, 0, 0, 0);
+	// CarState *ego_vehicle = new CarState(26.3781, 22.1658, 5.30978, 1, 0.0);
+	CarState *ego_vehicle = new CarState(26.3781, 22.1658, 5.30978, 1, 0.0);
+	CarState *goal = new CarState(31.25, 17.25, 0, 0, 0);
 	RRT *rrt = new RRT(ego_vehicle, goal, 2.0, 0.0);
 	rrt->search(env);
 	auto final_path = rrt->get_path();
