@@ -82,6 +82,8 @@ void CarState::set_delta(double delta_) {
 
 ostream & operator<<(ostream & os, CarState & car)
 {
-	os << car.get_x() << ", " << car.get_y() << ", " << TODEG(car.get_theta()) << ", " << TODEG(car.get_delta());
+	os << car.get_x() << ", " << car.get_y() << ", " << car.get_theta() << ", " << TODEG(car.get_delta());
 	return os;
 }
+
+

@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <memory>
 
 #include "state.h"
 #include "util.h"
@@ -29,24 +30,29 @@
 
 class static_map{
 private:
-	double map_width;
-	double map_length;
-	int slot_num;
-	std::vector<State*> slots;
-	std::unordered_set<State*, StateHasher, StateComparator> seen_slots;
-	std::vector<State*> unseen_slots;
+  double map_width;
+  double map_length;
+  int slot_num;
+  // std::vector<std::shared_Ptr<State*>> slots;
+  std::vector<State*> slots;
+  std::vector<State*> occupied_slots;
+  std::unordered_set<State*, StateHasher, StateComparator> goal_list;
+  std::vector<State*> unseen_slots;
 public:
-	static_map();
-	static_map(double wid, double len, std::vector<std::vector<double>> input);
-	~static_map();
-	int get_slot_num();
-	double get_map_width();
-	double get_map_length();
-	std::vector<State*> get_slots();
-	std::unordered_set<State*, StateHasher, StateComparator> get_seen_slots();
-	void update_seen_slots(CarState *ego);
+  static_map();
+  static_map(double wid, double len, std::vector<std::vector<double>> input);
+  ~static_map();
+  int get_slot_num();
+  double get_map_width();
+  double get_map_length();
+  std::vector<State*> get_slots();
+  std::vector<State*> get_occupied_slots();
+  std::unordered_set<State*, StateHasher, StateComparator> get_goal_list();
+  void update_goal_list(CarState *ego);
 };
 
 void parse_static_map(const char* filename, std::vector<std::vector<double>>& input);
+bool isLineofSightObstructed(double x1, double x2, double x3, double x4,
+                             double y1, double y2, double y3, double y4);
 
 #endif
