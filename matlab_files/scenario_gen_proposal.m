@@ -118,7 +118,7 @@ slot_xy_flag(24,4) = 0;
 slot_xy_flag(31,4) = 0;
 % slot_xy_flag(39,4) = 0;   % cheat here
 slot_xy_flag(40,4) = 0;
-% slot_xy_flag(46,4) = 0;   % comment out for map 2
+slot_xy_flag(46,4) = 0;   % comment out for map 2
 
 %% data output
 csvwrite('../src/map.csv', slot_xy_flag);

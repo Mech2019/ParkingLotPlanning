@@ -21,22 +21,23 @@ int main(){
 	
 
 	// /* test collision checking */
-	// //  printf("Start check collision !\n");
-	// State *state1 = new State(0, 0, 0, 0);
-	// State *state2 = new State(10, 0, 0, 0);
-	// CarState *carstate = new CarState(8.5, 2.75, PI/2, 1, 0.0);
-	// cout << collision_check(carstate, state2) << endl;
-	// cout << collision_check(carstate, carstate) << endl;
+	//  printf("Start check collision !\n");
+	// // CarState *state1 = new CarState(42.5354, 12.9548, 1.859030, 0, 0);
+	// State *state2 = new State(48.25, 12.25, 0, 0);
+	// // CarState *carstate = new CarState(8.5, 2.75, PI/2, 1, 0.0);
+	// // cout << collision_check(state1, state2) << endl;
 
-	// State *state3 = new State(0, 0, 0, 0);
-	// State *state4 = new State(5, 3, 0.54, 0);
-	// cout << collision_check(carstate, state4) << endl;
+	// auto obstacle = env->get_occupied_slots();
+	// for (auto o : obstacle){
+	// 	if (collision_check(state2, o)){
+	// 		cout << "collisiton:" << endl;
+	// 		cout << o << endl;
+	// 		cout << state2 << endl;
+	// 	}
+	// }
+	// // delete(state1);
+	// delete(state2);	
 
-	// delete(state1);
-	// delete(state2);
-	// delete(carstate);
-	// delete(state3);
-	// delete(state4);
 	// /* state comparator test */
 	// State *s1 = new State(1.0, 1.0, 0.0, true);
 	// State *s2 = new State(1.0, 1.0, 0.0, true);
@@ -200,37 +201,6 @@ int main(){
 		auto slot = *it;
 		cout << slot << endl;
 	}
-	// for (int i = 0; i < 10; i++){
-		// auto start_time = chrono::steady_clock::now();
-		// printf("i = %d\n", i);
-		// env->update_goal_list(ego_vehicle);
-		// a_star->update_goal_list(env);
-		// // printf("finished updating goal.\n");
-		// if (a_star->search(env) == 0){
-		// 	// printf("finished searching\n");
-		// 	path = a_star->get_path();
-		// 	// printf("A* path size %d\n", path.size());
-		// 	for (auto p : path){
-		// 		final_path.push_back(new CarState(p->get_x(), p->get_y(), 
-		// 			p->get_theta(), p->get_flag(), p->get_delta()));
-		// 	}
-		// }
-		// cout << a_star->get_goal()->get_state() << endl;
-		// // printf("finished copying paths.\n");
-		// // a_star->free_search_tree();
-		// // printf("cleared search tree\n");
-		// ego_vehicle->set_x(final_path[final_path.size() - 1]->get_x());
-		// ego_vehicle->set_y(final_path[final_path.size() - 1]->get_y());
-		// ego_vehicle->set_theta(final_path[final_path.size() - 1]->get_theta());
-		// ego_vehicle->set_delta(final_path[final_path.size() - 1]->get_delta());	
-		// // printf("finsied reinitialize ego_vehicle\n");
-		// a_star->set_start(ego_vehicle);
-		// auto end_time = chrono::steady_clock::now();
-		// cout << "seconds elapsed: " 
-		// 	<< (chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count())/1000.0 << endl;
-	// }
-
-
 
 	if (final_path.size() > 0){
 		printf("finished loading path\n");
