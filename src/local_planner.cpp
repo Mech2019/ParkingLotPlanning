@@ -172,7 +172,7 @@ void RRT_Tree::extend(int id, CarState& rand_state, static_map *env) {
   bool collision_check_res = local_collision_check(new_state, env);
 //  cout << "__________collision check: " << collision_check_res << endl;
 
-  if ((!collision_check_res)){
+  if ((!collision_check_res) || 1){
 
     // if no collision, add node
     int new_id = id;
@@ -381,7 +381,7 @@ void local_planner(CarState &start, CarState &goal,
 //      cout << *vec_it << ", ";
 //    }
 //    cout << " }" << endl;
-    outfile << tree.node_map[it->first] << endl;
+//    outfile << tree.node_map[it->first] << endl;
   }
 
   outfile << goal << endl;

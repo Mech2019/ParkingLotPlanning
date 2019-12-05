@@ -16,7 +16,7 @@
 
 #define MAP_WIDTH 40   // for temp use
 #define MAP_HEIGHT 28
-#define SAMPLES 100
+#define SAMPLES 1000
 
 
 const double EPSILON_DIST = 0.15;
