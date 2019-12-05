@@ -16,10 +16,10 @@
 
 #define MAP_WIDTH 40   // for temp use
 #define MAP_HEIGHT 28
-#define SAMPLES 20000
+#define SAMPLES 10
 
 
-const double EPSILON_DIST = 0.1;
+const double EPSILON_DIST = 0.15;
 const double EPSILON_THETA = M_PI / 10;
 const double RANDOM_STEP = M_PI / 20;
 const double GOAL_THRESHOLD = 0.2;
@@ -63,7 +63,7 @@ public:
   bool check_if_reached(CarState& from, CarState& goal);
   void reconstruct_path(int last_node_id, vector<int> &path_id);
   void sample_state(CarState curr_state, CarState sample_state);
-
+  double random_theta();
 };
 
 

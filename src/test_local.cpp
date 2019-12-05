@@ -17,14 +17,14 @@ int main(){
 
   cout << "test local planner..." << endl;
 
-  CarState start(42.5354, 16.9548, 1.55903, 0, 0);
-  CarState goal(48.25, 12.25, 0, 0, 0);
+//  CarState start(42.5354, 16.9548, 1.55903, 0, 0);
+//  CarState goal(48.25, 12.25, 0, 0, 0);
 
 //  CarState goal(38, 8, 4.712389, 0, 0);
 
 // stuck case
-//  CarState start(27.0812, 21.1323, 5.30978, 0, 0);
-//  CarState goal(31.25, 17.25, 0, 0, 0);
+  CarState start(27.0812, 21.1323, 5.30978, 0, 0);
+  CarState goal(31.25, 17.25, 0, 0, 0);
 
   vector<CarState> plan;
 
