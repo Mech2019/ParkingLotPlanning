@@ -28,11 +28,11 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
   } else {
 //    rand_x = rand() % MAP_WIDTH - MAP_WIDTH/2;
 //    rand_y = rand() % MAP_HEIGHT - MAP_HEIGHT/2;
-//    rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
+//    rand_theta = rand() % (int) (2 * PI / RANDOM_STEP) * RANDOM_STEP - PI;
 
     rand_x = rand() % 10 - 10/2 + start_pos.get_x();
     rand_y = rand() % 10 - 10/2 + start_pos.get_y();
-    rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
+    rand_theta = rand() % (int) (2 * PI / RANDOM_STEP) * RANDOM_STEP - PI;
 //    cout << "rand theta: " << rand_theta << endl;
   }
 
@@ -44,25 +44,25 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
 //  cout << "Sample from random: " << rand_state << endl;
 }
 
-void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
-    CarState& curr_state) {
+// void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
+//     CarState& curr_state) {
 
-  vector<vector<CarState>> result;
-  vector<State*> obstacle;
-  curr_state.compute_primitive(result, obstacle);
+//   vector<vector<CarState>> result;
+//   vector<State*> obstacle;
+//   curr_state.compute_primitive(result, obstacle);
 
-  int m = result.size();
-  int n = result[0].size();
-//  cout << "sample size = " << m << ", " << n << endl;
+//   int m = result.size();
+//   int n = result[0].size();
+// //  cout << "sample size = " << m << ", " << n << endl;
 
-  srand(id); // fixed for debug reason
-  int selected_m = rand() % m;
-  int selected_n = rand() % n;
+//   srand(id); // fixed for debug reason
+//   int selected_m = rand() % m;
+//   int selected_n = rand() % n;
 
-  rand_state = result[selected_m][selected_n];
-//  cout <<"Sample from primitives result: " << rand_state << endl;
+//   rand_state = result[selected_m][selected_n];
+// //  cout <<"Sample from primitives result: " << rand_state << endl;
 
-}
+// }
 
 void RRT_Tree::get_new_state_from_nearest(CarState& rand_state, CarState& nearest,
                                 CarState& new_state){
@@ -172,7 +172,7 @@ void RRT_Tree::extend(int id, CarState& rand_state, static_map *env) {
   bool collision_check_res = local_collision_check(new_state, env);
 //  cout << "__________collision check: " << collision_check_res << endl;
 
-  if ((!collision_check_res) || 1){
+  if ((!collision_check_res)){
 
     // if no collision, add node
     int new_id = id;
@@ -202,19 +202,19 @@ void RRT_Tree::add_node(int id, static_map *env) {
 
 }
 
-void RRT_Tree::add_node_from_primitives(int id, CarState& curr_state, static_map *env) {
+// void RRT_Tree::add_node_from_primitives(int id, CarState& curr_state, static_map *env) {
 
-  CarState nearest = CarState();
-  CarState rand_state = CarState();
+//   CarState nearest = CarState();
+//   CarState rand_state = CarState();
 
-  sample_node_from_primitives(id, rand_state, curr_state);
+//   sample_node_from_primitives(id, rand_state, curr_state);
 
-  extend(id, rand_state, env);
-  nearest_neighbor(rand_state, nearest);
+//   extend(id, rand_state, env);
+//   nearest_neighbor(rand_state, nearest);
 
-  sample_node_from_primitives(id, rand_state, curr_state);
+//   sample_node_from_primitives(id, rand_state, curr_state);
 
-}
+// }
 
 void RRT_Tree::print_tree() {
 
@@ -312,7 +312,7 @@ void sample_state(int id, CarState curr_state, CarState sample_state){
   srand(id); // for debug
   double s_x = rand()%10 - 5 + curr_x;
   double s_y = rand()%10 - 5 + curr_y;
-  double s_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP;
+  double s_theta = rand() % (int) (2 * PI / RANDOM_STEP) * RANDOM_STEP;
 
   sample_state.set_x(s_x);
   sample_state.set_y(s_y);

@@ -215,5 +215,5 @@ bool collision_check(State *s1, T *s2){
 // 	return false;
 // }
 // Declear useful function header
-bool total_collision_check(vector<State*> &obstacles, State *car);
+// bool total_collision_check(vector<State*> &obstacles, State *car);
 #endif

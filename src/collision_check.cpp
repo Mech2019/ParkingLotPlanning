@@ -132,16 +132,16 @@ using namespace std;
 // 	return false;
 // }
 
-bool total_collision_check(vector<State*> &obstacles, State *car) {
-	bool result = false;
-	for (State *s2 : obstacles) {
-		result |= collision_check(s2, car);
-        // printf("car state: %lf, %lf, %lf \n", car->get_x(), car->get_y(), car->get_theta());
-        // printf("obs state: %lf, %lf, %lf \n", s2->get_x(), s2->get_y(), s2->get_theta());
-		if (result) return result;
-	}
-	return result;
-}
+// bool total_collision_check(vector<State*> &obstacles, State *car) {
+// 	bool result = false;
+// 	for (State *s2 : obstacles) {
+// 		result |= collision_check(s2, car);
+//         // printf("car state: %lf, %lf, %lf \n", car->get_x(), car->get_y(), car->get_theta());
+//         // printf("obs state: %lf, %lf, %lf \n", s2->get_x(), s2->get_y(), s2->get_theta());
+// 		if (result) return result;
+// 	}
+// 	return result;
+// }
 
 
 

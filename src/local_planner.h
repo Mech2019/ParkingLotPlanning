@@ -20,15 +20,15 @@
 
 
 const double EPSILON_DIST = 0.15;
-const double EPSILON_THETA = M_PI / 10;
-const double RANDOM_STEP = M_PI / 20;
+const double EPSILON_THETA = PI / 10;
+const double RANDOM_STEP = PI / 20;
 const double GOAL_THRESHOLD = 0.2;
-const double GOAL_THETA_THRESHOLD = M_PI / 10;
-//const double GOAL_THETA_THRESHOLD = 2 * M_PI;
+const double GOAL_THETA_THRESHOLD = PI / 10;
+//const double GOAL_THETA_THRESHOLD = 2 * PI;
 
 const double GOAL_BIAS = 0.05;
-const double TURN_RANGE = M_PI / 3;
-const double TURN_MIN = (M_PI * 5 / 180);
+const double TURN_RANGE = PI / 3;
+const double TURN_MIN = (PI * 5 / 180);
 
 void local_planner(CarState &start_state, CarState &goal_state,
                    vector<CarState>& plan, static_map *env);
@@ -47,10 +47,10 @@ public:
 
   RRT_Tree(CarState start, CarState goal);
   void add_node(int id, static_map *env);
-  void add_node_from_primitives(int id, CarState& curr_state, static_map *env);
+  // void add_node_from_primitives(int id, CarState& curr_state, static_map *env);
   void sample_node(int id, CarState& rand_state);
-  void sample_node_from_primitives(int id, CarState& rand_state, CarState&
-  curr_state);
+  // void sample_node_from_primitives(int id, CarState& rand_state, CarState&
+  // curr_state);
   void extend(int id, CarState& rand_state, static_map *env);
   int nearest_neighbor(CarState& rand_state, CarState& nearest);
   void get_new_state_from_nearest(CarState& rand_state, CarState& nearest,

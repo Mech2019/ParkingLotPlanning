@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "local_planner.h"
 #include "state.h"
 #include "map.h"
 #include "util.h"
