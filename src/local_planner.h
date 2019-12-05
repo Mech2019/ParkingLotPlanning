@@ -19,7 +19,7 @@
 #define SAMPLES 20000
 
 
-const double EPSILON_DIST = 0.2;
+const double EPSILON_DIST = 0.1;
 const double EPSILON_THETA = M_PI / 10;
 const double RANDOM_STEP = M_PI / 20;
 const double GOAL_THRESHOLD = 0.2;
