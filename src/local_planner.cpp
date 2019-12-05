@@ -44,25 +44,25 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
 //  cout << "Sample from random: " << rand_state << endl;
 }
 
-void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
-    CarState& curr_state) {
-
-  vector<vector<CarState>> result;
-  vector<State*> obstacle;
-  curr_state.compute_primitive(result, obstacle);
-
-  int m = result.size();
-  int n = result[0].size();
-//  cout << "sample size = " << m << ", " << n << endl;
-
-  srand(id); // fixed for debug reason
-  int selected_m = rand() % m;
-  int selected_n = rand() % n;
-
-  rand_state = result[selected_m][selected_n];
-//  cout <<"Sample from primitives result: " << rand_state << endl;
-
-}
+//void RRT_Tree::sample_node_from_primitives(int id, CarState &rand_state,
+//    CarState& curr_state) {
+//
+//  vector<vector<CarState>> result;
+//  vector<State*> obstacle;
+//  curr_state.compute_primitive(result, obstacle);
+//
+//  int m = result.size();
+//  int n = result[0].size();
+////  cout << "sample size = " << m << ", " << n << endl;
+//
+//  srand(id); // fixed for debug reason
+//  int selected_m = rand() % m;
+//  int selected_n = rand() % n;
+//
+//  rand_state = result[selected_m][selected_n];
+////  cout <<"Sample from primitives result: " << rand_state << endl;
+//
+//}
 
 void RRT_Tree::get_new_state_from_nearest(CarState& rand_state, CarState& nearest,
                                 CarState& new_state){
@@ -202,19 +202,19 @@ void RRT_Tree::add_node(int id, static_map *env) {
 
 }
 
-void RRT_Tree::add_node_from_primitives(int id, CarState& curr_state, static_map *env) {
-
-  CarState nearest = CarState();
-  CarState rand_state = CarState();
-
-  sample_node_from_primitives(id, rand_state, curr_state);
-
-  extend(id, rand_state, env);
-  nearest_neighbor(rand_state, nearest);
-
-  sample_node_from_primitives(id, rand_state, curr_state);
-
-}
+//void RRT_Tree::add_node_from_primitives(int id, CarState& curr_state, static_map *env) {
+//
+//  CarState nearest = CarState();
+//  CarState rand_state = CarState();
+//
+//  sample_node_from_primitives(id, rand_state, curr_state);
+//
+//  extend(id, rand_state, env);
+//  nearest_neighbor(rand_state, nearest);
+//
+//  sample_node_from_primitives(id, rand_state, curr_state);
+//
+//}
 
 void RRT_Tree::print_tree() {
 
