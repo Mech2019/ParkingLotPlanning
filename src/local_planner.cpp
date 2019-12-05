@@ -32,7 +32,69 @@ void RRT_Tree::sample_node(int id, CarState& rand_state) {
 
     rand_x = rand() % 10 - 10/2 + start_pos.get_x();
     rand_y = rand() % 10 - 10/2 + start_pos.get_y();
-    rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
+//    rand_theta = rand() % (int) (2 * M_PI / RANDOM_STEP) * RANDOM_STEP - M_PI;
+
+    // sample theta by initial status
+
+    double x_car, y_car, theta_car, x_park, y_park, theta_park;
+
+    x_car = start_pos.get_x();
+    y_car = start_pos.get_y();
+    theta_car = start_pos.get_theta();
+
+    x_park = goal_pos.get_x();
+    y_park = goal_pos.get_y();
+    theta_park = goal_pos.get_theta();
+
+    // case 1: 0~pi
+    if (0 <= theta_car && theta_car <= PI ){
+      // 1-1
+      if (x_car < x_park && y_car < y_park){
+        // sample theta from theta_car to 0
+        rand_theta = rand() % (int) (theta_car / RANDOM_STEP) * RANDOM_STEP;
+      }
+      // 1-2
+      if (x_car > x_park && y_car > y_park){
+        // sample theta from theta_car to 0
+        rand_theta = rand() % (int) (theta_car / RANDOM_STEP) * RANDOM_STEP;
+      }
+      // 1-3
+      if (x_car < x_park && y_car < y_park){
+        // sample theta from theta_car to pi
+        rand_theta = rand() % (int) (PI / RANDOM_STEP) * RANDOM_STEP;
+      }
+      // 1-4
+      if (x_car > x_park && y_car > y_park){
+        // sample theta from theta_car to pi
+        rand_theta = rand() % (int) (PI / RANDOM_STEP) * RANDOM_STEP;
+      }
+    }
+
+    // case 2: pi~2*pi
+    if (PI < theta_car && theta_car <= 2*PI ){
+      // 2-1
+      if (x_car < x_park && y_car < y_park){
+        // sample theta from theta_car to pi
+        rand_theta = rand() % (int) (PI / RANDOM_STEP) * RANDOM_STEP;
+      }
+
+      if (x_car > x_park && y_car > y_park){
+        // sample theta from theta_car to pi
+        rand_theta = rand() % (int) (PI / RANDOM_STEP) * RANDOM_STEP;
+      }
+      // 1-3
+      if (x_car < x_park && y_car > y_park){
+        // sample theta from theta_car to 2pi
+        rand_theta = rand() % (int) (2*PI / RANDOM_STEP) * RANDOM_STEP;
+      }
+      //1-4
+      if (x_car > x_park && y_car < y_park){
+        // sample theta from theta_car to 2pi
+        rand_theta = rand() % (int) (2*PI / RANDOM_STEP) * RANDOM_STEP;
+      }
+    }
+
+
 //    cout << "rand theta: " << rand_theta << endl;
   }
 
