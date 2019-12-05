@@ -75,7 +75,7 @@ class CarState : public State {
 private:
 	double delta; // steering angle
 	CarState nextCarState(CarState car, double dt) const;
-
+	// CarState nextCarState(CarState start, double velocity, double dt) const; 
 public:
 	CarState();
 	CarState(double x_, double y_, double theta_, bool flag_, double delta_);

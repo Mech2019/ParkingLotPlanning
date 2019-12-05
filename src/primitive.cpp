@@ -66,6 +66,65 @@ CarState CarState::nextCarState(CarState start, double dt) const {
 	return new_state;
 }
 
+// CarState CarState::nextCarState(CarState start, double velocity, double dt) const {
+// 	double start_x = start.get_x();
+// 	double start_y = start.get_y();
+// 	double theta = start.get_theta();
+// 	double delta = start.get_delta();
+// 	double flag = start.get_flag();
+
+// 	double curve_length = velocity * dt;
+// 	double turning_radius = abs(wheel_base / tan(delta)) + car_wid * 0.5;
+// 	double dtheta = abs(curve_length / turning_radius);
+
+// 	//if wheel turn right, reverse the change in heading
+// 	if (delta < 0.0) {
+// 		dtheta = -dtheta;
+// 	}
+
+// 	double new_theta = 0.0;
+// 	new_theta = theta + dtheta;
+// 	if (new_theta > 2.0 * PI) {
+// 		new_theta -= 2.0 * PI;
+// 	}
+// 	else if (new_theta < 0.0) {
+// 		new_theta += 2.0 * PI;
+// 	}
+
+// 	double new_x_global, new_y_global;
+// 	double rot_x, rot_y, rot_theta;
+
+// 	if (delta == 0.0) {
+// 		new_x_global = start_x + cos(theta)*curve_length;
+// 		new_y_global = start_y + sin(theta)*curve_length;
+// 	}
+// 	else {
+// 		//find rotation center
+// 		if (delta > 0.0) {
+// 			rot_theta = theta + PI / 2.0;
+// 		}
+// 		else {
+// 			rot_theta = theta - PI / 2.0;
+// 		}
+
+// 		rot_x = start_x + turning_radius * cos(rot_theta);
+// 		rot_y = start_y + turning_radius * sin(rot_theta);
+// 		double local_theta = atan2(start_y - rot_y, start_x - rot_x);
+
+// 		//homogeneous tranformation to get new global coordinates
+// 		new_x_global = cos(dtheta) * turning_radius * cos(local_theta)
+// 			- sin(dtheta) * turning_radius * sin(local_theta)
+// 			+ rot_x;
+// 		new_y_global = sin(dtheta) * turning_radius * cos(local_theta)
+// 			+ cos(dtheta) * turning_radius * sin(local_theta)
+// 			+ rot_y;
+// 	}
+
+// 	CarState new_state(new_x_global, new_y_global, new_theta, flag, delta);
+
+// 	return new_state;
+// }
+
 // input: 
 //	empty 2D vector of CarState to store sampled locations
 //	vector of obstacles to check for collision
