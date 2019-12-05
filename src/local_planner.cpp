@@ -172,7 +172,7 @@ void RRT_Tree::extend(int id, CarState& rand_state, static_map *env) {
   bool collision_check_res = local_collision_check(new_state, env);
 //  cout << "__________collision check: " << collision_check_res << endl;
 
-  if ((!collision_check_res) || 1){
+  if ((!collision_check_res)){
 
     // if no collision, add node
     int new_id = id;
@@ -319,6 +319,51 @@ void sample_state(int id, CarState curr_state, CarState sample_state){
   sample_state.set_theta(s_theta);
 }
 
+void position_check(CarState &start, CarState &goal) {
+
+  double x_car, y_car, theta_car, x_park, y_park, theta_park;
+
+  x_car = start.get_x();
+  y_car = start.get_y();
+  theta_car = start.get_theta();
+
+  x_park = goal.get_x();
+  y_park = goal.get_y();
+  theta_park = goal.get_theta();
+
+  // case 1: 0~pi
+  if (0 <= theta_car && theta_car <= PI ){
+
+    if (x_car < x_park && y_car > y_park){
+      goal.set_theta(PI);
+    }
+
+    if (x_car > x_park && y_car < y_park){
+      goal.set_theta(PI);
+    }
+  }
+
+  // case 2: pi~2*pi
+  if (PI < theta_car && theta_car <= 2*PI ){
+
+    if (x_car < x_park && y_car < y_park){
+      goal.set_theta(PI);
+    }
+
+    if (x_car > x_park && y_car > y_park){
+      goal.set_theta(PI);
+    }
+
+    if (x_car < x_park && y_car > y_park){
+      goal.set_theta(2*PI);
+    }
+
+    if (x_car > x_park && y_car < y_park){
+      goal.set_theta(2*PI);
+    }
+  }
+}
+
 
 
 
@@ -335,9 +380,14 @@ void local_planner(CarState &start, CarState &goal,
   cout << "start collision check: " << res1 << endl;
   cout << "goal collision check: " << res2 << endl;
 
+  position_check(start, goal);
+
+  cout << "start " << start << endl;
+  cout << "goal update" << goal << endl;
+
   // open a file in write mode.
   ofstream outfile;
-  outfile.open("local_result.txt");
+  outfile.open("local_result.csv");
   outfile << start << endl;
 
   bool reached = 0;

@@ -16,10 +16,10 @@
 
 #define MAP_WIDTH 40   // for temp use
 #define MAP_HEIGHT 28
-#define SAMPLES 1000
+#define SAMPLES 20000
 
 
-const double EPSILON_DIST = 0.15;
+const double EPSILON_DIST = 0.2;
 const double EPSILON_THETA = M_PI / 10;
 const double RANDOM_STEP = M_PI / 20;
 const double GOAL_THRESHOLD = 0.2;
@@ -33,6 +33,8 @@ const double TURN_MIN = (M_PI * 5 / 180);
 void local_planner(CarState &start_state, CarState &goal_state,
                    vector<CarState>& plan, static_map *env);
 bool local_collision_check(CarState& curr_state, static_map *env);
+void position_check(CarState& start, CarState& goal);
+
 
 class RRT_Tree {
 public:
@@ -61,7 +63,6 @@ public:
   bool check_if_reached(CarState& from, CarState& goal);
   void reconstruct_path(int last_node_id, vector<int> &path_id);
   void sample_state(CarState curr_state, CarState sample_state);
-
 
 };
 
