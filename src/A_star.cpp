@@ -211,14 +211,21 @@ void A_star::update_goal_list(static_map *env){
 }
 
 double A_star::calculate_heuristics(SearchNode *node){
-	double goal_virtual_w = 1000.0;
 	double result = DBL_MAX;
+	State *closest;
 	for (auto it = this->goal_list.begin(); it != this->goal_list.end(); it++){
 		double theta = (node->get_state()->get_theta()); 
 		double c = calc_state_distance(node->get_state(), *it) +
 					 calc_state_distance(*it, virtual_goal);
+		// result = goal_virtual_w * MIN(result, c);
+		if (c < result)
+			closest = *it;
 		result = goal_virtual_w * MIN(result, c);
 	}
+	// printf("the nearest spot is:\n");
+	// cout << node->get_state() << endl;
+	// cout << closest << endl;
+	// printf("heursitics = %lf\n", result);
 	return result;
 }
 

@@ -61,7 +61,7 @@ for i = 1 : numberOfFrames
     ego_x = traj(i, 1);
     ego_y = traj(i, 2);
     ego_theta = traj(i, 3);
-     % lower left point
+    % lower left point
     point_ll = [- car_len/2; -car_wid/2];
     % lower right point
     point_lr = [car_len/2; -car_wid/2];

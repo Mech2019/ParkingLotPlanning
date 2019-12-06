@@ -41,7 +41,7 @@ private:
 public:
 	static_map();
 	static_map(double wid, double len, std::vector<std::vector<double>> input);
-	~static_map();
+	// ~static_map();
 	int get_slot_num();
 	double get_map_width();
 	double get_map_length();

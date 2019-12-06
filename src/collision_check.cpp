@@ -55,50 +55,6 @@ bool intersect_lines(double x1, double y1, double x2, double y2, double x3, doub
   
     return false; 
 }
-
-template <class T>
-bool collision_check(State *s1, T *s2){
-	int direc[] = {1, 1, -1, -1, 1}; 
-
-	std::vector<double> v1, v2;
-	for (int i = 0; i < 4; i++) {
-		v1.push_back(s1->get_x() + direc[i] * (car_len/2 * sin(s1->get_theta()) + car_wid/2 * cos(s1->get_theta())));
-		v1.push_back(s1->get_y() + direc[i + 1] * (car_len/2 * cos(s1->get_theta()) + car_wid/2 * sin(s1->get_theta())));
-		v2.push_back(s2->get_x() + direc[i] * (car_len/2 * sin(s2->get_theta()) + car_wid/2 * cos(s2->get_theta())));
-		v2.push_back(s2->get_y() + direc[i + 1] * (car_len/2 * cos(s2->get_theta()) + car_wid/2 * sin(s2->get_theta())));
-	}
-
-	v1.push_back(s1->get_x() + (car_len/2 * sin(s1->get_theta()) + car_wid/2 * cos(s1->get_theta())));
-	v1.push_back(s1->get_y() + (car_len/2 * cos(s1->get_theta()) + car_wid/2 * sin(s1->get_theta())));
-	v2.push_back(s2->get_x() + (car_len/2 * sin(s2->get_theta()) + car_wid/2 * cos(s2->get_theta())));
-	v2.push_back(s2->get_y() + (car_len/2 * cos(s2->get_theta()) + car_wid/2 * sin(s2->get_theta())));
-
-	for (int i = 0; i < 4; i++) {
-		if (intersect_point(s1, v2[2 * i], v2[2 * i + 1])) {
-		return true;
-		}
-	}
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			if (intersect_lines(v1[2 * i], v1[2 * i + 1], v1[2 * (i + 1)], v1[2 * (i + 1) + 1], 
-				v2[2 * i], v2[2 * i + 1], v2[2 * (i + 1)], v2[2 * (i + 1) + 1])) {
-				return true;
-			}
-		}
-	}
-
-	// out of bound check
-	// if (s1->get_x() < 0 || s1->get_x() > map_wid)
-	// 	return true;
-	if (s2->get_x() < 0 || s2->get_x() > map_wid)
-		return true;
-	// if (s1->get_y() < 0 || s1->get_y() > map_len)
-	// 	return true;
-	if (s2->get_y() < 0 || s2->get_y() > map_len)
-		return true;
-	return false;
-}
-
 bool total_collision_check(vector<State*> &obstacles, State *car) {
 	bool result = false;
 	for (State *s2 : obstacles) {
@@ -109,3 +65,69 @@ bool total_collision_check(vector<State*> &obstacles, State *car) {
 	}
 	return result;
 }
+
+
+
+// bool linesegmentcheck(double x1, double x2, double x3, double x4,
+// 								double y1, double y2, double y3, double y4){
+// 	if (x1 == x2 && x3 == x4){
+// 		// printf("case 1\n");
+// 		// printf("x1==x3? %d\n", x1==x3);
+// 		if (x1 == x3){
+// 			// printf("im here\n");
+// 			// printf("y3: %lf \n", (y3-y1)*(y3-y2));
+// 			// printf("y4: %lf \n", (y4-y1)*(y4-y2));
+// 			if ((y3-y1)*(y3-y2) <= 0 || (y4-y1)*(y4-y2) <= 0){
+// 				return true;
+// 			}
+// 		}
+// 	} else if (x1 == x2 && x3 != x4) {
+// 		// printf("case 2\n");
+// 		double m2 = (y4 - y3) / (x4 - x3);
+// 		double b2 = y3 - m2 * x3;
+
+// 		double x_intersect = x1;
+// 		double y_intersect = m2 * x_intersect + b2;
+// 		if ((x_intersect-x1)*(x_intersect-x2) <= 0
+// 			&& (x_intersect-x3)*(x_intersect-x4) <= 0
+// 			&& (y_intersect-y1)*(y_intersect-y2) <= 0
+// 			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
+// 			return true;
+// 		}
+// 	} else if (x1 != x2 && x3 == x4) {
+// 		// printf("case 3\n");
+// 		double m1 = (y2 - y1) / (x2 - x1);
+// 		double b1 = y1 - m1 * x1;
+
+// 		double x_intersect = x3;
+// 		double y_intersect = m1 * x_intersect + b1;
+// 		if ((x_intersect-x1)*(x_intersect-x2) <= 0
+// 			&& (x_intersect-x3)*(x_intersect-x4) <= 0
+// 			&& (y_intersect-y1)*(y_intersect-y2) <= 0
+// 			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
+// 			return true;
+// 		}
+// 		// printf("case3, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
+// 	} else {
+// 		// calculate slope and y-intersection for line
+// 		double m1 = (y2 - y1) / (x2 - x1);
+// 		double b1 = y1 - m1 * x1;
+// 		double m2 = (y4 - y3) / (x4 - x3);
+// 		double b2 = y3 - m2 * x3;
+// 		// printf("line 1: m1 = %lf, b1 = %lf\n", m1, b1);
+// 		// printf("line 2: m2 = %lf, b2 = %lf\n", m2, b2);
+// 		// calculate intersection coordinate
+// 		double x_intersect = (b2-b1)/(m1-m2);
+// 		double y_intersect = m1 * x_intersect + b1;
+// 		// check if the intersection point is on both segment
+// 		if ((x_intersect-x1)*(x_intersect-x2) <= 0
+// 			&& (x_intersect-x3)*(x_intersect-x4) <= 0
+// 			&& (y_intersect-y1)*(y_intersect-y2) <= 0
+// 			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
+// 			return true;
+// 		}
+// 		// printf("case4, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
+// 	}
+// 	// printf("im here 2\n");
+// 	return false;
+// }

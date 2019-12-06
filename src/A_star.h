@@ -12,6 +12,7 @@
 #include "util.h"
 
 static const int max_expansion = 75;
+static double goal_virtual_w = 1000.0;
 // /*
 //  * This function gives the ability to compare b/t a CarState and a State
 //  */
