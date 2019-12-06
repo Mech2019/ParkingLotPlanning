@@ -7,7 +7,7 @@
 #include "map.h"
 #include "util.h"
 
-static const double TOLERANCE = 0.1;
+static const double TOLERANCE = 1.0;
 static const int RRT_SAMPLE = 10;
 static const int MAX_COUNT = 70000;
 static const double RRT_DURATION = 1.0;
