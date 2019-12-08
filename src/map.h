@@ -48,7 +48,7 @@ public:
 	std::vector<State*> get_slots();
 	std::vector<State*> get_occupied_slots();
 	std::unordered_set<State*, StateHasher, StateComparator> get_goal_list();
-	void update_goal_list(CarState *ego);
+	void update_goal_list(CarState *ego, string fn);
 };
 
 void parse_static_map(const char* filename, std::vector<std::vector<double>>& input);

@@ -1,6 +1,6 @@
 scenario_gen_proposal;
 map = load('../src/map.csv');
-traj = load('../src/traj.csv');
+traj = load('../src/rrt_sample.csv');
 
 rMAT = @(theta) [cos(theta), -sin(theta); sin(theta), cos(theta)];
 for j = 1:total_slot_num
@@ -16,4 +16,7 @@ for j = 1:total_slot_num
     end
 end
 scatter(traj(:,1),traj(:,2),'.');
+% hold off;
+hold on;
+scatter(30.4784,30.5445,'x','LineWidth',2);
 hold off;

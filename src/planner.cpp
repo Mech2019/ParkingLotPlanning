@@ -1,9 +1,12 @@
 #include "planner.h"
 #include <chrono>
+#include <string>
 
 using namespace std;
 
 static const char *traj_fn = "traj.csv";
+static const char *map_fn = "slot";
+static const char *csv_fn = ".csv";
 
 
 int main(){
@@ -25,6 +28,7 @@ int main(){
 	/* A_star replanning */
 	CarState *ego_vehicle;
 	State *virtual_goal = new State(50.0, 30.0, 0.0, 0.0);
+	// State *virtual_goal = new State(80.0, 50.0, 0.0, 0.0);
 	A_star *a_star; 
 
 	vector<CarState *> final_path;
@@ -38,9 +42,10 @@ int main(){
 	SearchNode *goal = NULL;
 	CarState *prev_state = NULL;
 	CarState *curr_state = NULL;
-	double term_tol = 0.00001;
+	double term_tol = 0.001;
 	int i = 0;
 	while (true){
+		string fn = map_fn + to_string(i) + csv_fn;
 		if (prev_state && curr_state){
 			double dx = curr_state->get_x() - prev_state->get_x();
 			double dy = curr_state->get_y() - prev_state->get_y();
@@ -50,7 +55,7 @@ int main(){
 		}
 		auto start_time = chrono::steady_clock::now();
 		printf("i = %d\n", i++);
-		env->update_goal_list(ego_vehicle);
+		env->update_goal_list(ego_vehicle, fn);
 		a_star->update_goal_list(env);
 		// printf("finished updating goal.\n");
 		if (a_star->search(env) == 0){
@@ -65,7 +70,7 @@ int main(){
 		prev_state = curr_state;
 		if (path.size()){
 			curr_state = path[path.size()-1];
-		}
+		} 
 		goal = a_star->get_goal();
 		cout << "goal: " << goal->get_state() << endl;
 		cout << "curr " << curr_state << endl;
@@ -80,19 +85,26 @@ int main(){
 		cout << "seconds elapsed: " 
 			<< (chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count())/1000.0 << endl;
 	}
+	// printf("Im here\n");
 
 
 	/* RRT local planning */
+	int n = 10;
 	SearchNode *astar_goal = a_star->get_goal();
 	CarState *RRT_start;
-	if (final_path.size() > 0)
-		RRT_start = final_path[final_path.size()-5];
-	
+	if (final_path.size() > n)
+		RRT_start = final_path[final_path.size()-n];
+	else
+		RRT_start = final_path[final_path.size() - 1];
+	// printf("Im here 2\n");
 	CarState *RRT_goal = new CarState();
 	double dist = DBL_MAX;
 	for (auto slot : env->get_slots()){
 		if (!slot->get_flag()){
-			double d = calc_state_distance(astar_goal->get_state(), slot);
+			// double d = calc_state_distance(astar_goal->get_state(), slot);
+			double d = calc_state_distance(final_path[final_path.size() - 1], slot);
+			cout << "map slot:" << slot << endl;
+			cout << "dist: " << d <<endl;
 			if (d < dist){
 				dist = d;
 				RRT_goal->set_x(slot->get_x());
@@ -107,10 +119,21 @@ int main(){
 
 	RRT *rrt = new RRT(RRT_start, RRT_goal, 2.0, 0.0);
 	printf("start rrt searching.\n");
+
+	auto start_time = chrono::steady_clock::now();
+
 	rrt->search(env);
+
+	auto end_time = chrono::steady_clock::now();
+    cout << "seconds elapsed: " 
+        << (chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count())/1000.0 << endl;
+	
 	auto final_rrt_path = rrt->get_path();
-	if (final_rrt_path.size() > 0){
-		final_path.insert(final_path.end()-5, final_rrt_path.begin(), final_rrt_path.end());
+	if (final_rrt_path.size() > n){
+		final_path.insert(final_path.end()-n, final_rrt_path.begin(), final_rrt_path.end());
+		final_path.erase(final_path.end()-n, final_path.end());
+	} else {
+		final_path.insert(final_path.end(), final_rrt_path.begin(), final_rrt_path.end());
 	}
 
 
@@ -124,7 +147,6 @@ int main(){
 		traj_file.close();
 		printf("finished writing\n");
 	}
-
 	a_star->free_search_tree();
 
 	delete env;

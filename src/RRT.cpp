@@ -173,67 +173,67 @@ std::vector<CarState *> RRT_node::get_path(){
 	return path_from_parent;
 }
 
-/* RRT helper functions */
-bool linesegmentcheck(double x1, double x2, double x3, double x4,
-								double y1, double y2, double y3, double y4){
-	if (x1 == x2 && x3 == x4){
-		// printf("case 1\n");
-		// printf("x1==x3? %d\n", x1==x3);
-		if (x1 == x3){
-			// printf("im here\n");
-			// printf("y3: %lf \n", (y3-y1)*(y3-y2));
-			// printf("y4: %lf \n", (y4-y1)*(y4-y2));
-			if ((y3-y1)*(y3-y2) <= 0 || (y4-y1)*(y4-y2) <= 0){
-				return true;
-			}
-		}
-	} else if (x1 == x2 && x3 != x4) {
-		// printf("case 2\n");
-		double m2 = (y4 - y3) / (x4 - x3);
-		double b2 = y3 - m2 * x3;
+// /* RRT helper functions */
+// bool linesegmentcheck(double x1, double x2, double x3, double x4,
+// 								double y1, double y2, double y3, double y4){
+// 	if (x1 == x2 && x3 == x4){
+// 		// printf("case 1\n");
+// 		// printf("x1==x3? %d\n", x1==x3);
+// 		if (x1 == x3){
+// 			// printf("im here\n");
+// 			// printf("y3: %lf \n", (y3-y1)*(y3-y2));
+// 			// printf("y4: %lf \n", (y4-y1)*(y4-y2));
+// 			if ((y3-y1)*(y3-y2) <= 0 || (y4-y1)*(y4-y2) <= 0){
+// 				return true;
+// 			}
+// 		}
+// 	} else if (x1 == x2 && x3 != x4) {
+// 		// printf("case 2\n");
+// 		double m2 = (y4 - y3) / (x4 - x3);
+// 		double b2 = y3 - m2 * x3;
 
-		double x_intersect = x1;
-		double y_intersect = m2 * x_intersect + b2;
-		if ((x_intersect-x1)*(x_intersect-x2) <= 0
-			&& (x_intersect-x3)*(x_intersect-x4) <= 0
-			&& (y_intersect-y1)*(y_intersect-y2) <= 0
-			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
-			return true;
-		}
-	} else if (x1 != x2 && x3 == x4) {
-		// printf("case 3\n");
-		double m1 = (y2 - y1) / (x2 - x1);
-		double b1 = y1 - m1 * x1;
+// 		double x_intersect = x1;
+// 		double y_intersect = m2 * x_intersect + b2;
+// 		if ((x_intersect-x1)*(x_intersect-x2) <= 0
+// 			&& (x_intersect-x3)*(x_intersect-x4) <= 0
+// 			&& (y_intersect-y1)*(y_intersect-y2) <= 0
+// 			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
+// 			return true;
+// 		}
+// 	} else if (x1 != x2 && x3 == x4) {
+// 		// printf("case 3\n");
+// 		double m1 = (y2 - y1) / (x2 - x1);
+// 		double b1 = y1 - m1 * x1;
 
-		double x_intersect = x3;
-		double y_intersect = m1 * x_intersect + b1;
-		if ((x_intersect-x1)*(x_intersect-x2) <= 0
-			&& (x_intersect-x3)*(x_intersect-x4) <= 0
-			&& (y_intersect-y1)*(y_intersect-y2) <= 0
-			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
-			return true;
-		}
-		// printf("case3, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
-	} else {
-		// calculate slope and y-intersection for line
-		double m1 = (y2 - y1) / (x2 - x1);
-		double b1 = y1 - m1 * x1;
-		double m2 = (y4 - y3) / (x4 - x3);
-		double b2 = y3 - m2 * x3;
-		// printf("line 1: m1 = %lf, b1 = %lf\n", m1, b1);
-		// printf("line 2: m2 = %lf, b2 = %lf\n", m2, b2);
-		// calculate intersection coordinate
-		double x_intersect = (b2-b1)/(m1-m2);
-		double y_intersect = m1 * x_intersect + b1;
-		// check if the intersection point is on both segment
-		if ((x_intersect-x1)*(x_intersect-x2) <= 0
-			&& (x_intersect-x3)*(x_intersect-x4) <= 0
-			&& (y_intersect-y1)*(y_intersect-y2) <= 0
-			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
-			return true;
-		}
-		// printf("case4, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
-	}
-	// printf("im here 2\n");
-	return false;
-}
+// 		double x_intersect = x3;
+// 		double y_intersect = m1 * x_intersect + b1;
+// 		if ((x_intersect-x1)*(x_intersect-x2) <= 0
+// 			&& (x_intersect-x3)*(x_intersect-x4) <= 0
+// 			&& (y_intersect-y1)*(y_intersect-y2) <= 0
+// 			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
+// 			return true;
+// 		}
+// 		// printf("case3, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
+// 	} else {
+// 		// calculate slope and y-intersection for line
+// 		double m1 = (y2 - y1) / (x2 - x1);
+// 		double b1 = y1 - m1 * x1;
+// 		double m2 = (y4 - y3) / (x4 - x3);
+// 		double b2 = y3 - m2 * x3;
+// 		// printf("line 1: m1 = %lf, b1 = %lf\n", m1, b1);
+// 		// printf("line 2: m2 = %lf, b2 = %lf\n", m2, b2);
+// 		// calculate intersection coordinate
+// 		double x_intersect = (b2-b1)/(m1-m2);
+// 		double y_intersect = m1 * x_intersect + b1;
+// 		// check if the intersection point is on both segment
+// 		if ((x_intersect-x1)*(x_intersect-x2) <= 0
+// 			&& (x_intersect-x3)*(x_intersect-x4) <= 0
+// 			&& (y_intersect-y1)*(y_intersect-y2) <= 0
+// 			&& (y_intersect-y3)*(y_intersect-y4) <= 0){
+// 			return true;
+// 		}
+// 		// printf("case4, intersect at (%lf, %lf)\n", x_intersect, y_intersect);
+// 	}
+// 	// printf("im here 2\n");
+// 	return false;
+// }

@@ -220,10 +220,16 @@ int main(){
 
 	/* Test RRT */
 	// CarState *ego_vehicle = new CarState(26.3781, 22.1658, 5.30978, 1, 0.0);
-	CarState *ego_vehicle = new CarState(26.3781, 22.1658, 5.30978, 1, 0.0);
+	CarState *ego_vehicle = new CarState(25.5, 22.5, PI*3/2, 1, 0.0);
 	CarState *goal = new CarState(31.25, 17.25, 0, 0, 0);
 	RRT *rrt = new RRT(ego_vehicle, goal, 2.0, 0.0);
+	
+	auto start_time = chrono::steady_clock::now();
 	rrt->search(env);
+	auto end_time = chrono::steady_clock::now();
+	cout << "seconds elapsed: " 
+		<< (chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count())/1000.0 << endl;
+	
 	auto final_path = rrt->get_path();
 	if (final_path.size() > 0){
 		printf("finished loading path\n");

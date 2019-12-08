@@ -54,7 +54,8 @@ unordered_set<State*, StateHasher, StateComparator> static_map::get_goal_list(){
 /*
  * This function takes in the ego vehicle state and update seen_slots
  */
-void static_map::update_goal_list(CarState *ego){
+void static_map::update_goal_list(CarState *ego, string fn){
+	// ofstream map_file(fn);
 	double ego_x = ego->get_x();
 	double ego_y = ego->get_y();
 	auto it = unseen_slots.begin();
@@ -145,6 +146,13 @@ void static_map::update_goal_list(CarState *ego){
 			++it;
 		}
 	}
+	// for (auto s : unseen_slots){
+	// 	map_file << s << endl;
+	// }
+	// for (auto it1 = goal_list.begin(); it1 != goal_list.end(); it1++){
+	// 	map_file << *it1 << endl;
+	// }
+	// map_file.close();
 }
 /*
  * This function parses the static map created by Matlab

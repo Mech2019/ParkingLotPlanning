@@ -9,13 +9,13 @@
 
 static const double TOLERANCE = 1.0;
 static const int RRT_SAMPLE = 10;
-static const int MAX_COUNT = 70000;
+static const int MAX_COUNT = 50000;
 static const double RRT_DURATION = 1.0;
 static const double BIAS = 0.10;
 static const double V_MAX = 4;	// maximum velocity of 3 m/s
 static const double V_MIN = 1; // maximum velocity
-static const double dDEL_MAX = TORAD(30);	// maximum change of delta in a second
-static const double dDEL_MIN = -TORAD(30); // minimum change of delta in a second
+static const double dDEL_MAX = TORAD(45);	// maximum change of delta in a second
+static const double dDEL_MIN = -TORAD(45); // minimum change of delta in a second
 
 /* RRT search node and class */
 class RRT_node{
@@ -66,24 +66,24 @@ public:
 
 /* RRT collision check helper functions */
 // line segmentcheck for two line segments
-bool linesegmentcheck(double x1, double x2, double x3, double x4,
-						double y1, double y2, double y3, double y4);
-// inflate state into a rectangle based on its heading angles
-template <class T>
-std::vector<std::vector<double>> inflate(T *s){
-	double theta = s->get_theta();
-	// ll, ul, ur, lr, ll
-	vector<double> x_coord = {-car_len/2, -car_len/2, car_len/2,  car_len/2, -car_len/2};
-	vector<double> y_coord = {-car_wid/2,  car_wid/2, car_wid/2, -car_wid/2, -car_wid/2};
+// bool linesegmentcheck(double x1, double x2, double x3, double x4,
+// 						double y1, double y2, double y3, double y4);
+// // inflate state into a rectangle based on its heading angles
+// template <class T>
+// std::vector<std::vector<double>> inflate(T *s){
+// 	double theta = s->get_theta();
+// 	// ll, ul, ur, lr, ll
+// 	vector<double> x_coord = {-car_len/2, -car_len/2, car_len/2,  car_len/2, -car_len/2};
+// 	vector<double> y_coord = {-car_wid/2,  car_wid/2, car_wid/2, -car_wid/2, -car_wid/2};
 
-	vector<vector<double>> result(2, vector<double>(5, 0.0));
+// 	vector<vector<double>> result(2, vector<double>(5, 0.0));
 
-	for (int i = 0; i < 5; i++){
-		result[0][i] = cos(theta) * x_coord[i] - sin(theta) * y_coord[i] + s->get_x();
-		result[1][i] = sin(theta) * x_coord[i] + cos(theta) * y_coord[i] + s->get_y();
-	} 
-	return result;
-}
+// 	for (int i = 0; i < 5; i++){
+// 		result[0][i] = cos(theta) * x_coord[i] - sin(theta) * y_coord[i] + s->get_x();
+// 		result[1][i] = sin(theta) * x_coord[i] + cos(theta) * y_coord[i] + s->get_y();
+// 	} 
+// 	return result;
+// }
 // RRT_collision_check main body
 template <class T>
 bool RRT_collision_check(State *s1, T *s2){

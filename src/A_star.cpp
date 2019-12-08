@@ -247,4 +247,3 @@ void A_star::free_search_tree(){
 		delete tmp;
 	}
 }
-
